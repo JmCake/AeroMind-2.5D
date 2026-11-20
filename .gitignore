@@ -1,0 +1,14 @@
+/node_modules/
+/dist/
+/output/
+/build/
+/.tools/
+/.venv/
+/artifacts/
+/.vs/
+/.idea/
+__pycache__/
+*.py[cod]
+*.spec
+*.tmp
+*.log
