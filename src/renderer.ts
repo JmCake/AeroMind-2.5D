@@ -361,7 +361,6 @@ export class CityView {
   lastTraffic = -10;
   lastWeather = '';
   selected = 0;
-  eventKey = '';
   traffic: T.InstancedMesh;
   ghost: Point[] = [];
   vehicleColors = ['#d78757', '#ecdfac', '#709b9f', '#b7c2a8', '#8c97a7'];
@@ -416,7 +415,6 @@ export class CityView {
     this.lastTraffic = -10;
     this.lastWeather = '';
     this.renderer.shadowMap.needsUpdate = true;
-    this.eventKey = '';
   }
   resize() {
     const w = Math.max(100, this.element.clientWidth),
@@ -559,12 +557,7 @@ export class CityView {
   }
   updateEvents() {
     const boxes = this.sim.extra;
-    const key = this.sim.s.events
-      .filter((e) => active(e, this.sim.s.time) && ['occupied', 'crane', 'traffic'].includes(e.kind))
-      .map((e) => e.id)
-      .join(',');
-    if (key !== this.eventKey) {
-      this.eventKey = key;
+    if (this.moving.children.length !== boxes.length) {
       for (const o of this.moving.children) {
         if (o instanceof T.Mesh) o.material.dispose();
       }

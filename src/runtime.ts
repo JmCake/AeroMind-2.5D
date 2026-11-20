@@ -54,7 +54,7 @@ export class Game {
   accumulator = 0;
   lastUI = 0;
   lastRecord = -1;
-  lastCompleted = 0;
+  lastReceipt: Receipt | undefined;
   lectureTime = -1;
   lectureCue = -1;
   lectureSnapshot: Snapshot | null = null;
@@ -150,11 +150,14 @@ export class Game {
       });
       if (this.timeline.length > 1100) this.timeline.shift();
     }
-    if (s.completed.length > this.lastCompleted) {
-      const receipt = s.completed[s.completed.length - 1];
-      this.onComplete(receipt);
-      if (this.lectureTime >= 0) this.lectureReport.push({ ...receipt });
-      this.lastCompleted = s.completed.length;
+    const latest = s.completed.at(-1);
+    if (latest && latest !== this.lastReceipt) {
+      const previous = this.lastReceipt ? s.completed.lastIndexOf(this.lastReceipt) : -1;
+      for (const receipt of s.completed.slice(previous + 1)) {
+        this.onComplete(receipt);
+        if (this.lectureTime >= 0) this.lectureReport.push({ ...receipt });
+      }
+      this.lastReceipt = latest;
     }
     if (this.lectureTime >= 0) {
       this.lectureTime += 1 / 30;
@@ -242,7 +245,7 @@ export class Game {
     this.view.setCity();
     this.view.ghost = [];
     this.timeline = [];
-    this.lastCompleted = 0;
+    this.lastReceipt = undefined;
     this.selected = 0;
     this.snapshot = null;
     this.previous = null;
@@ -286,7 +289,7 @@ export class Game {
     this.sim.restore(snapshot.state);
     this.sim.s.config.adaptive = adaptive;
     this.timeline = structuredClone(snapshot.timeline);
-    this.lastCompleted = this.sim.s.completed.length;
+    this.lastReceipt = this.sim.s.completed.at(-1);
     this.view.sim = this.sim;
     this.view.lastWeather = '';
     this.selected = Math.min(this.selected, this.sim.s.drones.length - 1);

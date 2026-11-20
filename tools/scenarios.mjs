@@ -106,6 +106,29 @@ export async function scenarios(page) {
     g.sim.order(1);
     await until(138);
     result.learned = details();
+    result.teamObservation = [];
+    for (const share of [false, true]) {
+      g.reset({ ...base, chapter: 5, fleet: 2, share });
+      const notifications = [];
+      const onComplete = g.onComplete;
+      g.onComplete = (receipt) => { onComplete(receipt); notifications.push(receipt.drone); };
+      g.sim.place('occupied', 7, 1, 0, 35);
+      g.sim.order(1);
+      g.sim.order(1);
+      let maxNewCells = 0;
+      const responses = new Map();
+      for (let sec = 0; sec < 55; sec++) {
+        await g.advance(1, 0.18);
+        for (const d of g.sim.s.drones) maxNewCells = Math.max(maxNewCells, d.viewGain);
+        for (const item of g.sim.s.log.filter((e) => e.message.includes('的协查')))
+          responses.set(item.time + '/' + item.drone, item);
+      }
+      await until(115, 2);
+      result.teamObservation.push({
+        share, maxNewCells, surveyResponses: [...responses.values()], notifications, ...details(),
+      });
+      g.onComplete = onComplete;
+    }
     return result;
   });
 }

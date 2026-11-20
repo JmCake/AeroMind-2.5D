@@ -599,7 +599,7 @@ function settings() {
     }
     game.reset(s.config);
     sim().restore(s);
-    game.lastCompleted = s.completed.length;
+    game.lastReceipt = sim().s.completed.at(-1);
     close();
     notice('实验条件已恢复 · 重新采集机载图像');
   });

@@ -8,6 +8,7 @@ import { randomUUID, createHash } from 'node:crypto';
 import { collect } from './collect.mjs';
 import { scenarios } from './scenarios.mjs';
 import { evaluateVision, profileNetwork } from './vision-eval.mjs';
+import { classroomUI } from './classroom-ui.mjs';
 import { chromium } from 'playwright-core';
 const args = process.argv.slice(2),
   mode = args[0] || 'smoke',
@@ -176,6 +177,14 @@ try {
       assert.ok(group.receipts.every((r) => r.result === '已签收并归港' && r.collisions === 0));
     }
     assert.ok(report.cases.checkpoints.at(-1).receipts.some((r) => r.signed));
+    const [localObservation, sharedObservation] = report.cases.teamObservation;
+    assert.equal(localObservation.surveyResponses.length, 0);
+    assert.ok(sharedObservation.surveyResponses.length > 0 && sharedObservation.maxNewCells > 0);
+    for (const group of report.cases.teamObservation) {
+      assert.deepEqual(group.notifications, group.receipts.map((r) => r.drone));
+      assert.equal(group.receipts.length, 2);
+      assert.ok(group.receipts.every((r) => r.result === '已签收并归港' && r.collisions === 0));
+    }
   } else if (mode === 'dataset') {
     report.data = await collect(page);
     console.log(JSON.stringify(report.data));
@@ -298,30 +307,7 @@ try {
       assert.ok(r.finished && !r.error);
     }
   } else if (mode === 'interaction') {
-    await page.getByRole('button', { name: '中文指令', exact: true }).click();
-    await page.locator('#parse').click();
-    assert.match(await page.locator('#parsed').innerText(), /体育馆/);
-    await page.locator('#submit-command').click();
-    await page.getByRole('button', { name: '布置挑战', exact: true }).click();
-    await page.locator('#event-position').selectOption('1');
-    await page.locator('#place-event').click();
-    await page.locator('#map').click();
-    await page.locator('#evidence').click();
-    await page.locator('#mask').click();
-    await page.locator('#next-layer').click();
-    await page.locator('#laboratory').click();
-    await page.locator('#save-snap').click();
-    await page.waitForFunction(() => !!window.aeromind.snapshot);
-    await page.locator('#adaptive').click();
-    await page.locator('#settings').click();
-    await page.locator('#sharing').selectOption('no');
-    await page.locator('#apply').click();
-    await page.locator('#reset').click();
-    report.result = await page.evaluate(() => ({
-      shared: window.aeromind.sim.s.config.share,
-      time: window.aeromind.sim.s.time,
-    }));
-    assert.equal(report.result.shared, false);
+    report.result = await classroomUI(page, out);
   } else throw Error('Unknown verification mode.');
   await writeFile(out + '/' + mode + '.json', JSON.stringify(report, null, 2));
   assert.deepEqual(errors, []);

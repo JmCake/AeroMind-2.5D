@@ -852,12 +852,29 @@ export class Simulation {
           d.route = [];
         }
         break;
-      case 'out':
+      case 'out': {
+        const counter = s.docks[o.station];
+        const ahead = level(s) >= 5 && s.drones.some((peer) =>
+          peer.order?.station === o.station && peer.order.id < o.id && working(peer) &&
+          (!peer.signed || (counter?.drone === peer.id && counter.until > t))
+        );
+        if (ahead) {
+          // Each game courier has a separate waiting square next to a shared cabinet.
+          const offset = [{ i: -1, j: 0 }, { i: 1, j: 0 }, { i: 0, j: 1 }][d.id];
+          const holding = { i: st.i + offset.i, j: st.j + offset.j, l: band };
+          if (this.route(d, holding)) {
+            d.destination = center(holding);
+            d.waited += 0.16;
+            this.reason(d, '柜台排队 · 在邻接街区等待前一单交接');
+          }
+          break;
+        }
         if (this.route(d, { i: st.i, j: st.j, l: band })) {
           d.nextPlan = t + 1;
           this.phase(d, 'search', '进入订单目标区域');
         }
         break;
+      }
       case 'search':
         this.search(d);
         break;
