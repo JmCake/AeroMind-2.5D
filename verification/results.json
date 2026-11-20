@@ -1,0 +1,1476 @@
+{
+  "application": {
+    "name": "AeroMind.exe",
+    "bytes": 12758382,
+    "sha256": "ad33c69a2037636523a86a059bd72056d4726762a9aef755c5a7b84050cb2f25",
+    "sourceRevision": "3aaa362f1eb23438f88f1cfa10500643ac45950c"
+  },
+  "completedAt": "2026-11-20T19:04:36.465Z",
+  "host": {
+    "cpu": "Intel(R) Core(TM) Ultra 5 125H",
+    "logicalProcessors": 18,
+    "osVisibleRamBytes": 33945935872,
+    "system": "Windows_NT 10.0.26300",
+    "renderer": "ANGLE (Intel, Intel(R) Arc(TM) Graphics (0x00007D55) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+    "webgl": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+    "viewport": [
+      1280,
+      720
+    ],
+    "drawingBuffer": [
+      929,
+      581
+    ],
+    "error": "",
+    "browser": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Safari/537.36 Edg/157.0.0.0"
+  },
+  "scope": {
+    "runtime": "One local Windows executable, system Edge and WebGL 2. The model uses one CPU/WASM thread.",
+    "network": "All browser suites intercepted and blocked non-loopback HTTP requests. No external request or uncaught page error was observed.",
+    "classroom": "Ten lecture-live runs used one Edge page at 1× normal playback. Native frame times were measured separately in a visible window.",
+    "geometry": "Distances are metres in the game. Energy is percentage points. A solo trip has no inter-drone distance.",
+    "metrics": "Lecture collision, path, error and energy totals cover receipts available at the seven-minute boundary. Unfinished work is recorded separately for real-time rounds.",
+    "humanTest": "Classroom controls were tested through pointer and keyboard interaction. Student comprehension requires a classroom trial."
+  },
+  "suites": [
+    "smoke",
+    "standard",
+    "perception",
+    "scenarios",
+    "interaction",
+    "native",
+    "lecture",
+    "lecture-live",
+    "launcher"
+  ],
+  "launcher": {
+    "mode": "launcher",
+    "testedApplicationSha256": "ad33c69a2037636523a86a059bd72056d4726762a9aef755c5a7b84050cb2f25",
+    "defaultArguments": false,
+    "appWindowOpenedSeconds": 2.36,
+    "automaticShutdownAfterCloseSeconds": 189.27,
+    "matureModelSha256": "b949caf2a204c21282a70e4e53b6ffb45cf0243cb852f4a8db5111d544238142"
+  },
+  "headedNative": [
+    {
+      "fleet": 1,
+      "frames": 2882,
+      "medianFps": 120.4819,
+      "p95FrameMs": 8.6,
+      "p95InferenceMs": 0.9,
+      "p95ControlMs": 116.2,
+      "controlSamples": 144,
+      "discarded": 0,
+      "lastRenderPassDrawCalls": 6
+    },
+    {
+      "fleet": 3,
+      "frames": 2879,
+      "medianFps": 120.4819,
+      "p95FrameMs": 8.6,
+      "p95InferenceMs": 1,
+      "p95ControlMs": 165.2,
+      "controlSamples": 196,
+      "discarded": 0,
+      "lastRenderPassDrawCalls": 103
+    }
+  ],
+  "standard": {
+    "receipts": 10,
+    "returnedSigned": 10,
+    "outcomes": {
+      "已签收并归港": 10
+    },
+    "collisionEventsOnReceipts": 0,
+    "minRecordedInterDroneMetres": null,
+    "maxSignedDropErrorMetres": 0.6756,
+    "totalPathMetres": 1583.8785,
+    "totalEnergyPercentagePoints": 26.7322,
+    "orders": [
+      {
+        "seed": 2101,
+        "acceptedDetections": 1,
+        "station": 1,
+        "drone": 0,
+        "signed": true,
+        "result": "已签收并归港",
+        "time": 31.3667,
+        "path": 158.2165,
+        "energy": 2.6686,
+        "collisions": 0,
+        "error": 0.6756,
+        "closest": null,
+        "poseRms": 0.0803,
+        "wait": 0,
+        "samples": 157
+      },
+      {
+        "seed": 2102,
+        "acceptedDetections": 1,
+        "station": 1,
+        "drone": 0,
+        "signed": true,
+        "result": "已签收并归港",
+        "time": 31.7,
+        "path": 159.4421,
+        "energy": 2.6889,
+        "collisions": 0,
+        "error": 0.6204,
+        "closest": null,
+        "poseRms": 0.0693,
+        "wait": 0,
+        "samples": 159
+      },
+      {
+        "seed": 2103,
+        "acceptedDetections": 1,
+        "station": 1,
+        "drone": 0,
+        "signed": true,
+        "result": "已签收并归港",
+        "time": 31.3667,
+        "path": 158.0998,
+        "energy": 2.6672,
+        "collisions": 0,
+        "error": 0.5687,
+        "closest": null,
+        "poseRms": 0.0748,
+        "wait": 0,
+        "samples": 157
+      },
+      {
+        "seed": 2104,
+        "acceptedDetections": 1,
+        "station": 1,
+        "drone": 0,
+        "signed": true,
+        "result": "已签收并归港",
+        "time": 31.5333,
+        "path": 158.5059,
+        "energy": 2.675,
+        "collisions": 0,
+        "error": 0.5179,
+        "closest": null,
+        "poseRms": 0.0678,
+        "wait": 0,
+        "samples": 158
+      },
+      {
+        "seed": 2105,
+        "acceptedDetections": 1,
+        "station": 1,
+        "drone": 0,
+        "signed": true,
+        "result": "已签收并归港",
+        "time": 31.3667,
+        "path": 157.6076,
+        "energy": 2.6613,
+        "collisions": 0,
+        "error": 0.4745,
+        "closest": null,
+        "poseRms": 0.0695,
+        "wait": 0,
+        "samples": 157
+      },
+      {
+        "seed": 2106,
+        "acceptedDetections": 1,
+        "station": 1,
+        "drone": 0,
+        "signed": true,
+        "result": "已签收并归港",
+        "time": 31.5333,
+        "path": 158.7447,
+        "energy": 2.6778,
+        "collisions": 0,
+        "error": 0.4251,
+        "closest": null,
+        "poseRms": 0.069,
+        "wait": 0,
+        "samples": 158
+      },
+      {
+        "seed": 2107,
+        "acceptedDetections": 1,
+        "station": 1,
+        "drone": 0,
+        "signed": true,
+        "result": "已签收并归港",
+        "time": 31.3667,
+        "path": 157.2724,
+        "energy": 2.6573,
+        "collisions": 0,
+        "error": 0.3807,
+        "closest": null,
+        "poseRms": 0.0686,
+        "wait": 0,
+        "samples": 157
+      },
+      {
+        "seed": 2108,
+        "acceptedDetections": 1,
+        "station": 1,
+        "drone": 0,
+        "signed": true,
+        "result": "已签收并归港",
+        "time": 31.5333,
+        "path": 157.8542,
+        "energy": 2.6671,
+        "collisions": 0,
+        "error": 0.3901,
+        "closest": null,
+        "poseRms": 0.0698,
+        "wait": 0,
+        "samples": 158
+      },
+      {
+        "seed": 2109,
+        "acceptedDetections": 1,
+        "station": 1,
+        "drone": 0,
+        "signed": true,
+        "result": "已签收并归港",
+        "time": 31.7,
+        "path": 159.1004,
+        "energy": 2.6848,
+        "collisions": 0,
+        "error": 0.298,
+        "closest": null,
+        "poseRms": 0.069,
+        "wait": 0,
+        "samples": 159
+      },
+      {
+        "seed": 2110,
+        "acceptedDetections": 1,
+        "station": 1,
+        "drone": 0,
+        "signed": true,
+        "result": "已签收并归港",
+        "time": 31.7,
+        "path": 159.0349,
+        "energy": 2.6842,
+        "collisions": 0,
+        "error": 0.3146,
+        "closest": null,
+        "poseRms": 0.0858,
+        "wait": 0.16,
+        "samples": 159
+      }
+    ]
+  },
+  "perception": {
+    "seeds": [
+      701,
+      719,
+      733,
+      751
+    ],
+    "positives": 120,
+    "occluded": 40,
+    "truePositives": 120,
+    "falsePositives": 0,
+    "recall": 1,
+    "precision": 1,
+    "coveredFalseDetections": 0,
+    "meanBoxIoU": 0.9836,
+    "meanBorderMaskIoU": 0.8333,
+    "meanCentroidErrorPixels": 0.1922,
+    "stableTrackPairs": 100,
+    "trackPairs": 100,
+    "cpuNetwork": {
+      "forwards": 1000,
+      "meanMs": 0.1735,
+      "blockMeanP95Ms": 0.22
+    }
+  },
+  "scenarios": {
+    "covered": {
+      "at22Seconds": {
+        "signed": false,
+        "views": 4,
+        "seen": []
+      },
+      "after": {
+        "summary": {
+          "receipts": 1,
+          "returnedSigned": 1,
+          "outcomes": {
+            "已签收并归港": 1
+          },
+          "collisionEventsOnReceipts": 0,
+          "minRecordedInterDroneMetres": null,
+          "maxSignedDropErrorMetres": 0.1384,
+          "totalPathMetres": 190.3934,
+          "totalEnergyPercentagePoints": 3.4498
+        },
+        "orders": [
+          {
+            "station": 1,
+            "drone": 0,
+            "signed": true,
+            "result": "已签收并归港",
+            "time": 45.0333,
+            "path": 190.3934,
+            "energy": 3.4498,
+            "collisions": 0,
+            "error": 0.1384,
+            "closest": null,
+            "poseRms": 0.1525,
+            "wait": 12.8,
+            "samples": 225
+          }
+        ],
+        "drones": [
+          {
+            "phase": "done",
+            "views": 9,
+            "viewGain": 0,
+            "accepted": 1,
+            "sent": 0,
+            "received": 0,
+            "dropped": 0,
+            "mapCells": 70,
+            "points": 620
+          }
+        ]
+      }
+    },
+    "sameStart": [
+      {
+        "adaptive": false,
+        "sameExternalStart": true,
+        "traceSamples": 131,
+        "millimetreTraceHash": "e68b7565",
+        "summary": {
+          "receipts": 1,
+          "returnedSigned": 1,
+          "outcomes": {
+            "已签收并归港": 1
+          },
+          "collisionEventsOnReceipts": 0,
+          "minRecordedInterDroneMetres": null,
+          "maxSignedDropErrorMetres": 0.4523,
+          "totalPathMetres": 135.988,
+          "totalEnergyPercentagePoints": 2.5845
+        },
+        "orders": [
+          {
+            "station": 2,
+            "drone": 0,
+            "signed": true,
+            "result": "已签收并归港",
+            "time": 43.3667,
+            "path": 135.988,
+            "energy": 2.5845,
+            "collisions": 0,
+            "error": 0.4523,
+            "closest": null,
+            "poseRms": 0.1456,
+            "wait": 16,
+            "samples": 217
+          }
+        ],
+        "drones": [
+          {
+            "phase": "done",
+            "views": 0,
+            "viewGain": 0,
+            "accepted": 1,
+            "sent": 0,
+            "received": 0,
+            "dropped": 0,
+            "mapCells": 59,
+            "points": 620
+          }
+        ]
+      },
+      {
+        "adaptive": true,
+        "sameExternalStart": true,
+        "traceSamples": 94,
+        "millimetreTraceHash": "59712dbf",
+        "summary": {
+          "receipts": 1,
+          "returnedSigned": 1,
+          "outcomes": {
+            "已签收并归港": 1
+          },
+          "collisionEventsOnReceipts": 0,
+          "minRecordedInterDroneMetres": null,
+          "maxSignedDropErrorMetres": 0.2998,
+          "totalPathMetres": 157.0506,
+          "totalEnergyPercentagePoints": 2.6414
+        },
+        "orders": [
+          {
+            "station": 2,
+            "drone": 0,
+            "signed": true,
+            "result": "已签收并归港",
+            "time": 30.8667,
+            "path": 157.0506,
+            "energy": 2.6414,
+            "collisions": 0,
+            "error": 0.2998,
+            "closest": null,
+            "poseRms": 0.0657,
+            "wait": 0,
+            "samples": 155
+          }
+        ],
+        "drones": [
+          {
+            "phase": "done",
+            "views": 0,
+            "viewGain": 0,
+            "accepted": 1,
+            "sent": 0,
+            "received": 0,
+            "dropped": 0,
+            "mapCells": 67,
+            "points": 620
+          }
+        ]
+      },
+      {
+        "adaptive": true,
+        "sameExternalStart": true,
+        "traceSamples": 94,
+        "millimetreTraceHash": "59712dbf",
+        "summary": {
+          "receipts": 1,
+          "returnedSigned": 1,
+          "outcomes": {
+            "已签收并归港": 1
+          },
+          "collisionEventsOnReceipts": 0,
+          "minRecordedInterDroneMetres": null,
+          "maxSignedDropErrorMetres": 0.2998,
+          "totalPathMetres": 157.0506,
+          "totalEnergyPercentagePoints": 2.6414
+        },
+        "orders": [
+          {
+            "station": 2,
+            "drone": 0,
+            "signed": true,
+            "result": "已签收并归港",
+            "time": 30.8667,
+            "path": 157.0506,
+            "energy": 2.6414,
+            "collisions": 0,
+            "error": 0.2998,
+            "closest": null,
+            "poseRms": 0.0657,
+            "wait": 0,
+            "samples": 155
+          }
+        ],
+        "drones": [
+          {
+            "phase": "done",
+            "views": 0,
+            "viewGain": 0,
+            "accepted": 1,
+            "sent": 0,
+            "received": 0,
+            "dropped": 0,
+            "mapCells": 67,
+            "points": 620
+          }
+        ]
+      }
+    ],
+    "fleetLocal": {
+      "summary": {
+        "receipts": 3,
+        "returnedSigned": 3,
+        "outcomes": {
+          "已签收并归港": 3
+        },
+        "collisionEventsOnReceipts": 0,
+        "minRecordedInterDroneMetres": 1.8445,
+        "maxSignedDropErrorMetres": 0.4484,
+        "totalPathMetres": 446.5923,
+        "totalEnergyPercentagePoints": 8.6039
+      },
+      "orders": [
+        {
+          "station": 3,
+          "drone": 0,
+          "signed": true,
+          "result": "已签收并归港",
+          "time": 26.3667,
+          "path": 108.8297,
+          "energy": 1.9812,
+          "collisions": 0,
+          "error": 0.4025,
+          "closest": 1.8445,
+          "poseRms": 0.1328,
+          "wait": 2.56,
+          "samples": 51
+        },
+        {
+          "station": 2,
+          "drone": 1,
+          "signed": true,
+          "result": "已签收并归港",
+          "time": 35.3667,
+          "path": 149.0914,
+          "energy": 2.8667,
+          "collisions": 0,
+          "error": 0.3042,
+          "closest": 1.8445,
+          "poseRms": 0.2784,
+          "wait": 4,
+          "samples": 65
+        },
+        {
+          "station": 1,
+          "drone": 2,
+          "signed": true,
+          "result": "已签收并归港",
+          "time": 43.2,
+          "path": 188.6711,
+          "energy": 3.756,
+          "collisions": 0,
+          "error": 0.4484,
+          "closest": 2.2368,
+          "poseRms": 0.5845,
+          "wait": 1.92,
+          "samples": 78
+        }
+      ],
+      "drones": [
+        {
+          "phase": "done",
+          "views": 0,
+          "viewGain": 0,
+          "accepted": 1,
+          "sent": 0,
+          "received": 0,
+          "dropped": 0,
+          "mapCells": 54,
+          "points": 620
+        },
+        {
+          "phase": "done",
+          "views": 0,
+          "viewGain": 0,
+          "accepted": 1,
+          "sent": 0,
+          "received": 0,
+          "dropped": 0,
+          "mapCells": 88,
+          "points": 620
+        },
+        {
+          "phase": "done",
+          "views": 0,
+          "viewGain": 0,
+          "accepted": 1,
+          "sent": 0,
+          "received": 0,
+          "dropped": 0,
+          "mapCells": 135,
+          "points": 620
+        }
+      ]
+    },
+    "fleetShared": {
+      "summary": {
+        "receipts": 3,
+        "returnedSigned": 3,
+        "outcomes": {
+          "已签收并归港": 3
+        },
+        "collisionEventsOnReceipts": 0,
+        "minRecordedInterDroneMetres": 1.8445,
+        "maxSignedDropErrorMetres": 0.4484,
+        "totalPathMetres": 446.5923,
+        "totalEnergyPercentagePoints": 8.6039
+      },
+      "orders": [
+        {
+          "station": 3,
+          "drone": 0,
+          "signed": true,
+          "result": "已签收并归港",
+          "time": 26.3667,
+          "path": 108.8297,
+          "energy": 1.9812,
+          "collisions": 0,
+          "error": 0.4025,
+          "closest": 1.8445,
+          "poseRms": 0.1328,
+          "wait": 2.56,
+          "samples": 51
+        },
+        {
+          "station": 2,
+          "drone": 1,
+          "signed": true,
+          "result": "已签收并归港",
+          "time": 35.3667,
+          "path": 149.0914,
+          "energy": 2.8667,
+          "collisions": 0,
+          "error": 0.3042,
+          "closest": 1.8445,
+          "poseRms": 0.2784,
+          "wait": 4,
+          "samples": 65
+        },
+        {
+          "station": 1,
+          "drone": 2,
+          "signed": true,
+          "result": "已签收并归港",
+          "time": 43.2,
+          "path": 188.6711,
+          "energy": 3.756,
+          "collisions": 0,
+          "error": 0.4484,
+          "closest": 2.2368,
+          "poseRms": 0.5845,
+          "wait": 1.92,
+          "samples": 78
+        }
+      ],
+      "drones": [
+        {
+          "phase": "done",
+          "views": 0,
+          "viewGain": 0,
+          "accepted": 1,
+          "sent": 689,
+          "received": 531,
+          "dropped": 301,
+          "mapCells": 182,
+          "points": 620
+        },
+        {
+          "phase": "done",
+          "views": 0,
+          "viewGain": 0,
+          "accepted": 1,
+          "sent": 696,
+          "received": 513,
+          "dropped": 301,
+          "mapCells": 183,
+          "points": 620
+        },
+        {
+          "phase": "done",
+          "views": 0,
+          "viewGain": 0,
+          "accepted": 1,
+          "sent": 697,
+          "received": 500,
+          "dropped": 320,
+          "mapCells": 199,
+          "points": 620
+        }
+      ]
+    },
+    "teamObservation": [
+      {
+        "share": false,
+        "maxNewConfirmedCells": 18,
+        "surveyResponses": [],
+        "receiptNotifications": [
+          1,
+          0
+        ],
+        "summary": {
+          "receipts": 2,
+          "returnedSigned": 2,
+          "outcomes": {
+            "已签收并归港": 2
+          },
+          "collisionEventsOnReceipts": 0,
+          "minRecordedInterDroneMetres": 1.797,
+          "maxSignedDropErrorMetres": 0.1949,
+          "totalPathMetres": 349.8298,
+          "totalEnergyPercentagePoints": 7.0902
+        },
+        "orders": [
+          {
+            "station": 1,
+            "drone": 1,
+            "signed": true,
+            "result": "已签收并归港",
+            "time": 53.8667,
+            "path": 185.8244,
+            "energy": 3.8371,
+            "collisions": 0,
+            "error": 0.1949,
+            "closest": 1.797,
+            "poseRms": 0.2521,
+            "wait": 18.4,
+            "samples": 161
+          },
+          {
+            "station": 1,
+            "drone": 0,
+            "signed": true,
+            "result": "已签收并归港",
+            "time": 63.3667,
+            "path": 164.0054,
+            "energy": 3.2531,
+            "collisions": 0,
+            "error": 0.1048,
+            "closest": 1.797,
+            "poseRms": 0.1496,
+            "wait": 29.6,
+            "samples": 186
+          }
+        ],
+        "drones": [
+          {
+            "phase": "done",
+            "views": 0,
+            "viewGain": 0,
+            "accepted": 1,
+            "sent": 0,
+            "received": 0,
+            "dropped": 0,
+            "mapCells": 68,
+            "points": 620
+          },
+          {
+            "phase": "done",
+            "views": 13,
+            "viewGain": 18,
+            "accepted": 1,
+            "sent": 0,
+            "received": 0,
+            "dropped": 0,
+            "mapCells": 96,
+            "points": 620
+          }
+        ]
+      },
+      {
+        "share": true,
+        "maxNewConfirmedCells": 3,
+        "surveyResponses": [
+          {
+            "time": 17.3,
+            "drone": 0,
+            "message": "响应蜂鸟 02的协查，转动测距扫描方向",
+            "frame": 2658
+          },
+          {
+            "time": 21.8,
+            "drone": 0,
+            "message": "响应蜂鸟 02的协查，转动测距扫描方向",
+            "frame": 2686
+          },
+          {
+            "time": 26.3,
+            "drone": 0,
+            "message": "响应蜂鸟 02的协查，转动测距扫描方向",
+            "frame": 2712
+          },
+          {
+            "time": 30.8,
+            "drone": 0,
+            "message": "响应蜂鸟 02的协查，转动测距扫描方向",
+            "frame": 2740
+          },
+          {
+            "time": 35.3,
+            "drone": 0,
+            "message": "响应蜂鸟 02的协查，转动测距扫描方向",
+            "frame": 2766
+          }
+        ],
+        "receiptNotifications": [
+          0,
+          1
+        ],
+        "summary": {
+          "receipts": 2,
+          "returnedSigned": 2,
+          "outcomes": {
+            "已签收并归港": 2
+          },
+          "collisionEventsOnReceipts": 0,
+          "minRecordedInterDroneMetres": 1.2391,
+          "maxSignedDropErrorMetres": 0.2133,
+          "totalPathMetres": 366.9229,
+          "totalEnergyPercentagePoints": 7.6074
+        },
+        "orders": [
+          {
+            "station": 1,
+            "drone": 0,
+            "signed": true,
+            "result": "已签收并归港",
+            "time": 63.3667,
+            "path": 164.0054,
+            "energy": 3.2531,
+            "collisions": 0,
+            "error": 0.1048,
+            "closest": 1.2391,
+            "poseRms": 0.1496,
+            "wait": 29.6,
+            "samples": 186
+          },
+          {
+            "station": 1,
+            "drone": 1,
+            "signed": true,
+            "result": "已签收并归港",
+            "time": 63.3667,
+            "path": 202.9175,
+            "energy": 4.3543,
+            "collisions": 0,
+            "error": 0.2133,
+            "closest": 1.2391,
+            "poseRms": 0.4698,
+            "wait": 18.4,
+            "samples": 186
+          }
+        ],
+        "drones": [
+          {
+            "phase": "done",
+            "views": 0,
+            "viewGain": 0,
+            "accepted": 1,
+            "sent": 581,
+            "received": 392,
+            "dropped": 193,
+            "mapCells": 128,
+            "points": 620
+          },
+          {
+            "phase": "done",
+            "views": 13,
+            "viewGain": 3,
+            "accepted": 1,
+            "sent": 585,
+            "received": 368,
+            "dropped": 213,
+            "mapCells": 128,
+            "points": 620
+          }
+        ]
+      }
+    ],
+    "checkpoints": [
+      {
+        "model": "early",
+        "summary": {
+          "receipts": 1,
+          "returnedSigned": 0,
+          "outcomes": {
+            "超时或电量不足": 1
+          },
+          "collisionEventsOnReceipts": 0,
+          "minRecordedInterDroneMetres": null,
+          "maxSignedDropErrorMetres": null,
+          "totalPathMetres": 104.5505,
+          "totalEnergyPercentagePoints": 2.7608
+        },
+        "orders": [
+          {
+            "station": 4,
+            "drone": 0,
+            "signed": false,
+            "result": "超时或电量不足",
+            "time": 85.0333,
+            "path": 104.5505,
+            "energy": 2.7608,
+            "collisions": 0,
+            "error": null,
+            "closest": null,
+            "poseRms": 0.047,
+            "wait": 32.32,
+            "samples": 425
+          }
+        ],
+        "drones": [
+          {
+            "phase": "abort",
+            "views": 0,
+            "viewGain": 0,
+            "accepted": 0,
+            "sent": 0,
+            "received": 0,
+            "dropped": 0,
+            "mapCells": 0,
+            "points": 0
+          }
+        ]
+      },
+      {
+        "model": "middle",
+        "summary": {
+          "receipts": 1,
+          "returnedSigned": 1,
+          "outcomes": {
+            "已签收并归港": 1
+          },
+          "collisionEventsOnReceipts": 0,
+          "minRecordedInterDroneMetres": null,
+          "maxSignedDropErrorMetres": 0.4553,
+          "totalPathMetres": 112.5876,
+          "totalEnergyPercentagePoints": 1.9781
+        },
+        "orders": [
+          {
+            "station": 4,
+            "drone": 0,
+            "signed": true,
+            "result": "已签收并归港",
+            "time": 23.5333,
+            "path": 112.5876,
+            "energy": 1.9781,
+            "collisions": 0,
+            "error": 0.4553,
+            "closest": null,
+            "poseRms": 0.0714,
+            "wait": 0,
+            "samples": 118
+          }
+        ],
+        "drones": [
+          {
+            "phase": "done",
+            "views": 0,
+            "viewGain": 0,
+            "accepted": 1,
+            "sent": 0,
+            "received": 0,
+            "dropped": 0,
+            "mapCells": 0,
+            "points": 0
+          }
+        ]
+      },
+      {
+        "model": "mature",
+        "summary": {
+          "receipts": 1,
+          "returnedSigned": 1,
+          "outcomes": {
+            "已签收并归港": 1
+          },
+          "collisionEventsOnReceipts": 0,
+          "minRecordedInterDroneMetres": null,
+          "maxSignedDropErrorMetres": 0.4553,
+          "totalPathMetres": 112.5876,
+          "totalEnergyPercentagePoints": 1.9781
+        },
+        "orders": [
+          {
+            "station": 4,
+            "drone": 0,
+            "signed": true,
+            "result": "已签收并归港",
+            "time": 23.5333,
+            "path": 112.5876,
+            "energy": 1.9781,
+            "collisions": 0,
+            "error": 0.4553,
+            "closest": null,
+            "poseRms": 0.0714,
+            "wait": 0,
+            "samples": 118
+          }
+        ],
+        "drones": [
+          {
+            "phase": "done",
+            "views": 0,
+            "viewGain": 0,
+            "accepted": 1,
+            "sent": 0,
+            "received": 0,
+            "dropped": 0,
+            "mapCells": 0,
+            "points": 0
+          }
+        ]
+      }
+    ],
+    "learned": {
+      "summary": {
+        "receipts": 1,
+        "returnedSigned": 1,
+        "outcomes": {
+          "已签收并归港": 1
+        },
+        "collisionEventsOnReceipts": 0,
+        "minRecordedInterDroneMetres": null,
+        "maxSignedDropErrorMetres": 0.1887,
+        "totalPathMetres": 197.02,
+        "totalEnergyPercentagePoints": 3.3525
+      },
+      "orders": [
+        {
+          "station": 1,
+          "drone": 0,
+          "signed": true,
+          "result": "已签收并归港",
+          "time": 44.8667,
+          "path": 197.02,
+          "energy": 3.3525,
+          "collisions": 0,
+          "error": 0.1887,
+          "closest": null,
+          "poseRms": 0.2145,
+          "wait": 3.2,
+          "samples": 225
+        }
+      ],
+      "drones": [
+        {
+          "phase": "done",
+          "views": 3,
+          "viewGain": 2,
+          "accepted": 1,
+          "sent": 0,
+          "received": 0,
+          "dropped": 0,
+          "mapCells": 71,
+          "points": 620
+        }
+      ]
+    }
+  },
+  "classroomControls": {
+    "parsed": "有多个目的地，请选定一个\n大学图书馆\n社区医院\n\n优先级 5 · 120 秒 · 占用时等待 · 避开体育馆\n\n确认派单",
+    "selectedStation": 2,
+    "mapEvent": {
+      "id": 3,
+      "kind": "closed",
+      "i": 4,
+      "j": 3,
+      "at": 2,
+      "duration": 22,
+      "minLayer": 1,
+      "maxLayer": 1
+    },
+    "restored": {
+      "shared": false,
+      "chapter": 4,
+      "events": 1
+    },
+    "observation": {
+      "frame": 135,
+      "time": 15.1667,
+      "model": "mature",
+      "score": 1,
+      "phase": "search"
+    }
+  },
+  "acceleratedLecture": {
+    "continuousRuns": 10,
+    "simulationSecondsPerRun": 420,
+    "wallSeconds": null,
+    "receipts": 100,
+    "returnedSigned": 100,
+    "outcomes": {
+      "已签收并归港": 100
+    },
+    "collisionEventsOnReceipts": 10,
+    "minRecordedInterDroneMetres": 1.089,
+    "maxSignedDropErrorMetres": 0.7815,
+    "totalPathMetres": 14894.8136,
+    "totalEnergyPercentagePoints": 284.578,
+    "runs": [
+      {
+        "round": 1,
+        "receipts": 10,
+        "returnedSigned": 10,
+        "outcomes": {
+          "已签收并归港": 10
+        },
+        "collisionEventsOnReceipts": 1,
+        "minRecordedInterDroneMetres": 1.089,
+        "maxSignedDropErrorMetres": 0.7815,
+        "totalPathMetres": 1489.4814,
+        "totalEnergyPercentagePoints": 28.4578
+      },
+      {
+        "round": 2,
+        "receipts": 10,
+        "returnedSigned": 10,
+        "outcomes": {
+          "已签收并归港": 10
+        },
+        "collisionEventsOnReceipts": 1,
+        "minRecordedInterDroneMetres": 1.089,
+        "maxSignedDropErrorMetres": 0.7815,
+        "totalPathMetres": 1489.4814,
+        "totalEnergyPercentagePoints": 28.4578
+      },
+      {
+        "round": 3,
+        "receipts": 10,
+        "returnedSigned": 10,
+        "outcomes": {
+          "已签收并归港": 10
+        },
+        "collisionEventsOnReceipts": 1,
+        "minRecordedInterDroneMetres": 1.089,
+        "maxSignedDropErrorMetres": 0.7815,
+        "totalPathMetres": 1489.4814,
+        "totalEnergyPercentagePoints": 28.4578
+      },
+      {
+        "round": 4,
+        "receipts": 10,
+        "returnedSigned": 10,
+        "outcomes": {
+          "已签收并归港": 10
+        },
+        "collisionEventsOnReceipts": 1,
+        "minRecordedInterDroneMetres": 1.089,
+        "maxSignedDropErrorMetres": 0.7815,
+        "totalPathMetres": 1489.4814,
+        "totalEnergyPercentagePoints": 28.4578
+      },
+      {
+        "round": 5,
+        "receipts": 10,
+        "returnedSigned": 10,
+        "outcomes": {
+          "已签收并归港": 10
+        },
+        "collisionEventsOnReceipts": 1,
+        "minRecordedInterDroneMetres": 1.089,
+        "maxSignedDropErrorMetres": 0.7815,
+        "totalPathMetres": 1489.4814,
+        "totalEnergyPercentagePoints": 28.4578
+      },
+      {
+        "round": 6,
+        "receipts": 10,
+        "returnedSigned": 10,
+        "outcomes": {
+          "已签收并归港": 10
+        },
+        "collisionEventsOnReceipts": 1,
+        "minRecordedInterDroneMetres": 1.089,
+        "maxSignedDropErrorMetres": 0.7815,
+        "totalPathMetres": 1489.4814,
+        "totalEnergyPercentagePoints": 28.4578
+      },
+      {
+        "round": 7,
+        "receipts": 10,
+        "returnedSigned": 10,
+        "outcomes": {
+          "已签收并归港": 10
+        },
+        "collisionEventsOnReceipts": 1,
+        "minRecordedInterDroneMetres": 1.089,
+        "maxSignedDropErrorMetres": 0.7815,
+        "totalPathMetres": 1489.4814,
+        "totalEnergyPercentagePoints": 28.4578
+      },
+      {
+        "round": 8,
+        "receipts": 10,
+        "returnedSigned": 10,
+        "outcomes": {
+          "已签收并归港": 10
+        },
+        "collisionEventsOnReceipts": 1,
+        "minRecordedInterDroneMetres": 1.089,
+        "maxSignedDropErrorMetres": 0.7815,
+        "totalPathMetres": 1489.4814,
+        "totalEnergyPercentagePoints": 28.4578
+      },
+      {
+        "round": 9,
+        "receipts": 10,
+        "returnedSigned": 10,
+        "outcomes": {
+          "已签收并归港": 10
+        },
+        "collisionEventsOnReceipts": 1,
+        "minRecordedInterDroneMetres": 1.089,
+        "maxSignedDropErrorMetres": 0.7815,
+        "totalPathMetres": 1489.4814,
+        "totalEnergyPercentagePoints": 28.4578
+      },
+      {
+        "round": 10,
+        "receipts": 10,
+        "returnedSigned": 10,
+        "outcomes": {
+          "已签收并归港": 10
+        },
+        "collisionEventsOnReceipts": 1,
+        "minRecordedInterDroneMetres": 1.089,
+        "maxSignedDropErrorMetres": 0.7815,
+        "totalPathMetres": 1489.4814,
+        "totalEnergyPercentagePoints": 28.4578
+      }
+    ]
+  },
+  "realtimeLecture": {
+    "continuousRuns": 10,
+    "simulationSecondsPerRun": 420,
+    "wallSeconds": 4206.281,
+    "receipts": 97,
+    "returnedSigned": 97,
+    "outcomes": {
+      "已签收并归港": 97
+    },
+    "collisionEventsOnReceipts": 2,
+    "minRecordedInterDroneMetres": 1.092,
+    "maxSignedDropErrorMetres": 0.9411,
+    "totalPathMetres": 14420.9511,
+    "totalEnergyPercentagePoints": 272.8384,
+    "runs": [
+      {
+        "round": 1,
+        "receipts": 10,
+        "returnedSigned": 10,
+        "outcomes": {
+          "已签收并归港": 10
+        },
+        "collisionEventsOnReceipts": 0,
+        "minRecordedInterDroneMetres": 1.2404,
+        "maxSignedDropErrorMetres": 0.7306,
+        "totalPathMetres": 1482.1226,
+        "totalEnergyPercentagePoints": 27.9893,
+        "wallSeconds": 420.549,
+        "queuedAtCutoff": 0,
+        "phasesAtCutoff": [
+          "done",
+          "done",
+          "done"
+        ],
+        "cameraFrameSerial": 3508,
+        "medianFpsEndWindow": 119.0476,
+        "p95InferenceMsEndWindow": 1.4,
+        "p95ControlMsEndWindow": 249.7
+      },
+      {
+        "round": 2,
+        "receipts": 9,
+        "returnedSigned": 9,
+        "outcomes": {
+          "已签收并归港": 9
+        },
+        "collisionEventsOnReceipts": 1,
+        "minRecordedInterDroneMetres": 1.092,
+        "maxSignedDropErrorMetres": 0.7306,
+        "totalPathMetres": 1366.7344,
+        "totalEnergyPercentagePoints": 25.9426,
+        "wallSeconds": 421.143,
+        "queuedAtCutoff": 0,
+        "phasesAtCutoff": [
+          "down",
+          "done",
+          "done"
+        ],
+        "cameraFrameSerial": 6914,
+        "medianFpsEndWindow": 119.0476,
+        "p95InferenceMsEndWindow": 1.7,
+        "p95ControlMsEndWindow": 290.1
+      },
+      {
+        "round": 3,
+        "receipts": 10,
+        "returnedSigned": 10,
+        "outcomes": {
+          "已签收并归港": 10
+        },
+        "collisionEventsOnReceipts": 0,
+        "minRecordedInterDroneMetres": 1.3742,
+        "maxSignedDropErrorMetres": 0.7306,
+        "totalPathMetres": 1474.1304,
+        "totalEnergyPercentagePoints": 27.8815,
+        "wallSeconds": 420.41,
+        "queuedAtCutoff": 0,
+        "phasesAtCutoff": [
+          "done",
+          "done",
+          "done"
+        ],
+        "cameraFrameSerial": 10517,
+        "medianFpsEndWindow": 120.4819,
+        "p95InferenceMsEndWindow": 1.3,
+        "p95ControlMsEndWindow": 182.5
+      },
+      {
+        "round": 4,
+        "receipts": 10,
+        "returnedSigned": 10,
+        "outcomes": {
+          "已签收并归港": 10
+        },
+        "collisionEventsOnReceipts": 0,
+        "minRecordedInterDroneMetres": 1.7146,
+        "maxSignedDropErrorMetres": 0.9411,
+        "totalPathMetres": 1472.6471,
+        "totalEnergyPercentagePoints": 27.8174,
+        "wallSeconds": 420.83,
+        "queuedAtCutoff": 0,
+        "phasesAtCutoff": [
+          "done",
+          "done",
+          "done"
+        ],
+        "cameraFrameSerial": 14118,
+        "medianFpsEndWindow": 120.4819,
+        "p95InferenceMsEndWindow": 1.1,
+        "p95ControlMsEndWindow": 174.3
+      },
+      {
+        "round": 5,
+        "receipts": 10,
+        "returnedSigned": 10,
+        "outcomes": {
+          "已签收并归港": 10
+        },
+        "collisionEventsOnReceipts": 0,
+        "minRecordedInterDroneMetres": 1.4067,
+        "maxSignedDropErrorMetres": 0.7306,
+        "totalPathMetres": 1472.5688,
+        "totalEnergyPercentagePoints": 27.816,
+        "wallSeconds": 420.11,
+        "queuedAtCutoff": 0,
+        "phasesAtCutoff": [
+          "done",
+          "done",
+          "done"
+        ],
+        "cameraFrameSerial": 17713,
+        "medianFpsEndWindow": 120.4819,
+        "p95InferenceMsEndWindow": 1.2,
+        "p95ControlMsEndWindow": 183
+      },
+      {
+        "round": 6,
+        "receipts": 10,
+        "returnedSigned": 10,
+        "outcomes": {
+          "已签收并归港": 10
+        },
+        "collisionEventsOnReceipts": 0,
+        "minRecordedInterDroneMetres": 1.5527,
+        "maxSignedDropErrorMetres": 0.7306,
+        "totalPathMetres": 1471.6975,
+        "totalEnergyPercentagePoints": 27.803,
+        "wallSeconds": 420.859,
+        "queuedAtCutoff": 0,
+        "phasesAtCutoff": [
+          "done",
+          "done",
+          "done"
+        ],
+        "cameraFrameSerial": 21318,
+        "medianFpsEndWindow": 120.4819,
+        "p95InferenceMsEndWindow": 1.2,
+        "p95ControlMsEndWindow": 165.9
+      },
+      {
+        "round": 7,
+        "receipts": 10,
+        "returnedSigned": 10,
+        "outcomes": {
+          "已签收并归港": 10
+        },
+        "collisionEventsOnReceipts": 0,
+        "minRecordedInterDroneMetres": 1.2909,
+        "maxSignedDropErrorMetres": 0.7306,
+        "totalPathMetres": 1477.5996,
+        "totalEnergyPercentagePoints": 27.9278,
+        "wallSeconds": 420.536,
+        "queuedAtCutoff": 0,
+        "phasesAtCutoff": [
+          "done",
+          "done",
+          "done"
+        ],
+        "cameraFrameSerial": 24918,
+        "medianFpsEndWindow": 120.4819,
+        "p95InferenceMsEndWindow": 1.2,
+        "p95ControlMsEndWindow": 181.9
+      },
+      {
+        "round": 8,
+        "receipts": 10,
+        "returnedSigned": 10,
+        "outcomes": {
+          "已签收并归港": 10
+        },
+        "collisionEventsOnReceipts": 1,
+        "minRecordedInterDroneMetres": 1.2741,
+        "maxSignedDropErrorMetres": 0.7306,
+        "totalPathMetres": 1472.0713,
+        "totalEnergyPercentagePoints": 27.8392,
+        "wallSeconds": 420.57,
+        "queuedAtCutoff": 0,
+        "phasesAtCutoff": [
+          "done",
+          "done",
+          "done"
+        ],
+        "cameraFrameSerial": 28519,
+        "medianFpsEndWindow": 120.4819,
+        "p95InferenceMsEndWindow": 1.1,
+        "p95ControlMsEndWindow": 181.1
+      },
+      {
+        "round": 9,
+        "receipts": 9,
+        "returnedSigned": 9,
+        "outcomes": {
+          "已签收并归港": 9
+        },
+        "collisionEventsOnReceipts": 0,
+        "minRecordedInterDroneMetres": 1.2995,
+        "maxSignedDropErrorMetres": 0.7306,
+        "totalPathMetres": 1365.4416,
+        "totalEnergyPercentagePoints": 25.9121,
+        "wallSeconds": 420.596,
+        "queuedAtCutoff": 0,
+        "phasesAtCutoff": [
+          "down",
+          "done",
+          "done"
+        ],
+        "cameraFrameSerial": 32123,
+        "medianFpsEndWindow": 120.4819,
+        "p95InferenceMsEndWindow": 1.4,
+        "p95ControlMsEndWindow": 173.9
+      },
+      {
+        "round": 10,
+        "receipts": 9,
+        "returnedSigned": 9,
+        "outcomes": {
+          "已签收并归港": 9
+        },
+        "collisionEventsOnReceipts": 0,
+        "minRecordedInterDroneMetres": 1.2882,
+        "maxSignedDropErrorMetres": 0.7306,
+        "totalPathMetres": 1365.9378,
+        "totalEnergyPercentagePoints": 25.9095,
+        "wallSeconds": 420.678,
+        "queuedAtCutoff": 0,
+        "phasesAtCutoff": [
+          "down",
+          "done",
+          "done"
+        ],
+        "cameraFrameSerial": 35729,
+        "medianFpsEndWindow": 120.4819,
+        "p95InferenceMsEndWindow": 1.2,
+        "p95ControlMsEndWindow": 174
+      }
+    ]
+  }
+}
