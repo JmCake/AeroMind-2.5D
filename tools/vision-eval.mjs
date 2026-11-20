@@ -7,26 +7,47 @@ export async function profileNetwork(page) {
   const source = [
     "import * as ort from 'onnxruntime-web/wasm';",
     "ort.env.wasm.numThreads=1;ort.env.wasm.wasmPaths=new URL('./runtime/',self.location.href).href;",
-    "self.onmessage=async({data})=>{try{",
+    'self.onmessage=async({data})=>{try{',
     "const model=await ort.InferenceSession.create('./models/mature.onnx',{executionProviders:['wasm']});",
-    "const values=Float32Array.from(atob(data),c=>c.charCodeAt(0)/255);",
+    'const values=Float32Array.from(atob(data),c=>c.charCodeAt(0)/255);',
     "const input=new ort.Tensor('float32',values,[1,1,24,24]);",
-    "async function forward(){const output=await model.run({image:input});output.logits.dispose();}",
-    "for(let i=0;i<30;i++)await forward();const blocks=[];",
-    "for(let b=0;b<25;b++){const start=performance.now();for(let i=0;i<40;i++)await forward();blocks.push((performance.now()-start)/40);}",
-    "input.dispose();await model.release();self.postMessage({forwards:1000,meanMs:blocks.reduce((a,b)=>a+b,0)/blocks.length,blockMeanP95Ms:blocks.sort((a,b)=>a-b)[23]});",
-    "}catch(error){self.postMessage({error:String(error)});}};",
+    'async function forward(){const output=await model.run({image:input});output.logits.dispose();}',
+    'for(let i=0;i<30;i++)await forward();const blocks=[];',
+    'for(let b=0;b<25;b++){const start=performance.now();for(let i=0;i<40;i++)await forward();blocks.push((performance.now()-start)/40);}',
+    'input.dispose();await model.release();self.postMessage({forwards:1000,meanMs:blocks.reduce((a,b)=>a+b,0)/blocks.length,blockMeanP95Ms:blocks.sort((a,b)=>a-b)[23]});',
+    '}catch(error){self.postMessage({error:String(error)});}};',
   ].join('\n');
-  const bundle=await build({stdin:{contents:source,resolveDir:process.cwd()},format:'esm',bundle:true,write:false,
-    minify:true,target:'es2022',legalComments:'none'});
-  await page.route('**/model-profile.js',route=>route.fulfill({contentType:'text/javascript',body:bundle.outputFiles[0].text}));
-  const data=JSON.parse(gunzipSync(await readFile('Vision/data/roof-crops.json.gz')));
-  const crop=data.rows.find(r=>r.split==='test'&&r.id===1).crop;
-  return page.evaluate(crop=>new Promise((resolve,reject)=>{
-    const worker=new Worker('./model-profile.js',{type:'module'});
-    worker.onmessage=({data})=>{worker.terminate();if(data.error)reject(Error(data.error));else resolve(data);};
-    worker.onerror=e=>{worker.terminate();reject(Error(e.message));};worker.postMessage(crop);
-  }),crop);
+  const bundle = await build({
+    stdin: { contents: source, resolveDir: process.cwd() },
+    format: 'esm',
+    bundle: true,
+    write: false,
+    minify: true,
+    target: 'es2022',
+    legalComments: 'none',
+  });
+  await page.route('**/model-profile.js', (route) =>
+    route.fulfill({ contentType: 'text/javascript', body: bundle.outputFiles[0].text })
+  );
+  const data = JSON.parse(gunzipSync(await readFile('Vision/data/roof-crops.json.gz')));
+  const crop = data.rows.find((r) => r.split === 'test' && r.id === 1).crop;
+  return page.evaluate(
+    (crop) =>
+      new Promise((resolve, reject) => {
+        const worker = new Worker('./model-profile.js', { type: 'module' });
+        worker.onmessage = ({ data }) => {
+          worker.terminate();
+          if (data.error) reject(Error(data.error));
+          else resolve(data);
+        };
+        worker.onerror = (e) => {
+          worker.terminate();
+          reject(Error(e.message));
+        };
+        worker.postMessage(crop);
+      }),
+    crop
+  );
 }
 // Geometry is used by this offline evaluator after a frame has gone through the normal worker.
 export async function evaluateVision(page) {

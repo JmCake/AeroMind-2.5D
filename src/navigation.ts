@@ -44,6 +44,17 @@ export function addEvidence(
 export function confidence(e: Evidence | undefined, t: number) {
   return e ? e.value * Math.exp(-Math.max(0, t - e.t) / 13) : 0;
 }
+export function fixedWaypoints(start: Cell, goal: Cell): Cell[] {
+  const path: Cell[] = [],
+    cursor = { ...start };
+  for (const axis of ['i', 'j', 'l'] as const) {
+    while (cursor[axis] !== goal[axis]) {
+      cursor[axis] += Math.sign(goal[axis] - cursor[axis]);
+      path.push({ ...cursor });
+    }
+  }
+  return path;
+}
 export function fuseScan(
   map: MapData,
   origin: Point,
@@ -198,15 +209,13 @@ export function plan(
   return [];
 }
 export function reserve(route: Cell[], start: Cell, at: number, drone: number): Reservation[] {
-  return route
-    .slice(0, 9)
-    .map((c, i) => ({
-      key: idx(c),
-      from: idx(i ? route[i - 1] : start),
-      start: at + i * 1.25 - 0.25,
-      end: at + (i + 1) * 1.25 + 0.6,
-      drone,
-    }));
+  return route.slice(0, 9).map((c, i) => ({
+    key: idx(c),
+    from: idx(i ? route[i - 1] : start),
+    start: at + i * 1.25 - 0.25,
+    end: at + (i + 1) * 1.25 + 0.6,
+    drone,
+  }));
 }
 export function bearing(a: Point, b: Point) {
   return Math.atan2(b.x - a.x, b.z - a.z);

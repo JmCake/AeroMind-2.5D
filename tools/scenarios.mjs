@@ -73,7 +73,10 @@ export async function scenarios(page) {
         s.externalRng === start.external &&
         JSON.stringify(s.events) === start.events;
       await until(135);
-      branches.push({ adaptive, same, trace: g.sim.s.drones[0].trace.length, ...details() });
+      const path=g.sim.s.drones[0].trace;
+      let fingerprint=2166136261;
+      for(const p of path)for(const axis of ['x','y','z'])fingerprint=Math.imul(fingerprint^Math.round(p[axis]*1000),16777619)>>>0;
+      branches.push({ adaptive, same, trace: path.length, millimetreTraceHash:fingerprint.toString(16), ...details() });
     }
     result.branches = branches;
     for (const share of [false, true]) {

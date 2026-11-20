@@ -171,12 +171,12 @@ function renderFrame(frame: Frame, c = canvas('feed'), mask = segmentation) {
     ctx.putImageData(img, 0, 0);
   }
   ctx.lineWidth = 1;
-  ctx.font = '9px Consolas';
+  ctx.font = '9px "Microsoft YaHei UI", sans-serif';
   for (const box of frame.result.detections) {
     ctx.strokeStyle = '#fc994d';
     ctx.fillStyle = '#173430';
     ctx.strokeRect(box.x - box.w / 2, box.y - box.h / 2, box.w, box.h);
-    const str = STATIONS[box.label].key + ' ' + Math.round(box.score * 100) + '%';
+    const str = STATIONS[box.label].name + ' ' + Math.round(box.score * 100) + '%';
     const x = clamp(box.x - box.w / 2, 0, WIDTH - 68),
       y = clamp(box.y - box.h / 2 - 10, 0, HEIGHT - 10);
     ctx.fillRect(x, y, ctx.measureText(str).width + 3, 11);
@@ -756,7 +756,7 @@ function evidence() {
       fact('表面起伏', Number.isFinite(d.roughness) ? d.roughness.toFixed(2) + ' m' : '待采样') +
       fact('局部几何', d.cloud.length + ' 点') +
       fact('候选视点', String(d.choices.length)) +
-      fact('观测后类别分数增量', d.viewGain.toFixed(2)) +
+      fact('观察期间新增确认格', String(d.viewGain)) +
       fact('相对接近时间', d.ttc === null ? '—' : num(d.ttc) + ' s') +
       fact('Q 策略动作', d.actionName || '尚未触发') +
       '</div>' +

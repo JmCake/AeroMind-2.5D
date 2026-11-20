@@ -18,7 +18,7 @@ import {
   touches,
 } from './city';
 import type { Box, Cell, CityEvent, EventKind, Point, Weather } from './city';
-import { bearing, frontier, fuseScan, plan, reserve } from './navigation';
+import { bearing, confidence, fixedWaypoints, frontier, fuseScan, plan, reserve } from './navigation';
 import type { Evidence, MapData, Range, Reservation } from './navigation';
 import type { Checkpoint, Detection, Observation } from './vision-types';
 
@@ -158,7 +158,8 @@ export interface Drone {
   lastDepth: number;
   actionName: string;
   viewGain: number;
-  beforeView: number;
+  confirmedBeforeView: number[] | null;
+  newViewCells: number[];
   homeLocked: boolean;
   observeUntil: number;
   observation: Point | null;
@@ -270,7 +271,8 @@ function aircraft(city: City, id: number): Drone {
     lastDepth: -2,
     actionName: '',
     viewGain: 0,
-    beforeView: 0,
+    confirmedBeforeView: null,
+    newViewCells: [],
     homeLocked: false,
     observeUntil: 0,
     observation: null,
@@ -533,6 +535,18 @@ export class Simulation {
         });
       }
       const changed = fuseScan(d.map, d.pose, rays, t, d.id, d.frame);
+      if (d.confirmedBeforeView && (d.phase === 'search' || d.observeUntil > t)) {
+        for (const c of changed) {
+          const key = idx(c);
+          if (
+            Math.abs(confidence(d.map[key], t)) >= 0.85 &&
+            !d.confirmedBeforeView.includes(key) &&
+            !d.newViewCells.includes(key)
+          )
+            d.newViewCells.push(key);
+        }
+        d.viewGain = d.newViewCells.length;
+      }
       if (t - d.lastSend > 0.7 && level(s) >= 5 && s.config.share) {
         d.lastSend = t;
         const evidence = changed
@@ -588,7 +602,13 @@ export class Simulation {
         d.lost++;
         return false;
       }
-      d.map[m.key] = { ...m.observation, value: m.observation.value * 0.82 };
+      const incoming = m.observation.value * 0.82,
+        local = confidence(old, s.time);
+      const conflict = Math.abs(local) >= 0.85 && local * incoming < 0;
+      d.map[m.key] = {
+        ...m.observation,
+        value: conflict ? clamp((local + incoming) * 0.3, -0.8, 0.8) : incoming,
+      };
       d.received++;
       return false;
     });
@@ -613,7 +633,10 @@ export class Simulation {
     const team = level(s) >= 5 && s.config.link !== '断开' ? s.reservations : [];
     const fresh = s.time >= d.nextPlan;
     if (fresh) {
-      const path = plan(from, goal, adaptive ? d.map : {}, s.time, rules, team, d.id, adaptive);
+      const path =
+        s.config.chapter === 1 && !s.config.adaptive
+          ? fixedWaypoints(from, goal)
+          : plan(from, goal, adaptive ? d.map : {}, s.time, rules, team, d.id, adaptive);
       d.route = path;
       d.nextPlan = s.time + (path.length ? 3.2 : 1.1);
       s.routeCount++;
@@ -709,7 +732,6 @@ export class Simulation {
           y: d.pose.y - d.headroom + 0.55,
         };
         d.accepted++;
-        if (d.views > 0) d.viewGain = Math.max(d.viewGain, sign.score - d.beforeView);
       } else d.dock = { ...anchor, y: d.pose.y - d.headroom + 0.55 };
       d.destination = { ...d.dock, y: Math.max(2.8, d.dock.y + 1.2) };
       this.phase(
@@ -747,7 +769,10 @@ export class Simulation {
       const act = this.action(d, d.headroom < 3 ? 3 : d.closing > 1 ? 2 : 0);
       const chosen = d.choices[0];
       d.actionName = ['等待', '换视角', '绕行复查'][act];
-      d.beforeView = sign?.score ?? 0;
+      if (act !== 0 && d.confirmedBeforeView === null)
+        d.confirmedBeforeView = Object.keys(d.map)
+          .map(Number)
+          .filter((key) => Math.abs(confidence(d.map[key], t)) >= 0.85);
       if (act === 0) {
         d.destination = { ...d.pose };
         this.reason(d, '策略选择等待 · 等候新的柜口画面');

@@ -2,9 +2,9 @@ import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
 import { createServer } from 'node:net';
 import { existsSync } from 'node:fs';
-import { mkdir, writeFile, unlink } from 'node:fs/promises';
+import { mkdir, writeFile, unlink, readFile } from 'node:fs/promises';
 import path from 'node:path';
-import { randomUUID } from 'node:crypto';
+import { randomUUID, createHash } from 'node:crypto';
 import { collect } from './collect.mjs';
 import { scenarios } from './scenarios.mjs';
 import { evaluateVision, profileNetwork } from './vision-eval.mjs';
@@ -114,8 +114,10 @@ try {
   assert.equal(hardware.error, '');
   console.log(JSON.stringify(hardware));
   await page.waitForFunction(() => window.aeromind.frames.size > 0, null, { timeout: 20000 });
-  if (mode==='smoke'||mode==='native') await page.screenshot({ path: out + '/' + mode + '-city.png' });
-  const report = { mode, hardware, external, errors, packaged: !!process.env.AEROMIND_APP };
+  if (mode === 'smoke' || mode === 'native') await page.screenshot({ path: out + '/' + mode + '-city.png' });
+  const testedApplicationSha256=process.env.AEROMIND_APP?
+    createHash('sha256').update(await readFile(process.env.AEROMIND_APP)).digest('hex'):null;
+  const report = { mode, hardware, external, errors, packaged: !!process.env.AEROMIND_APP,testedApplicationSha256 };
   if (mode === 'smoke' || mode === 'standard') {
     const results = [];
     for (let i = 0; i < (mode === 'smoke' ? 1 : 10); i++) {
@@ -242,6 +244,8 @@ try {
           p = (a, n) => (a.length ? [...a].sort((x, y) => x - y)[Math.floor((a.length - 1) * n)] : null);
         return {
           ended: g.lectureTime < 0,
+          queued:g.sim.s.orders.length,
+          finalPhases:g.sim.s.drones.map(d=>d.phase),
           receipts: g.lectureReport,
           error: g.error,
           frames: g.serial,
