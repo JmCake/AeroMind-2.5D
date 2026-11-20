@@ -187,7 +187,7 @@ TypeScript 以固定仿真步长推进游戏动力学，表现质量、载荷、
 ## 十二、技术资料
 
 - [Three.js 三维渲染库与维护记录](https://github.com/mrdoob/three.js)
-- [Three.js 离屏渲染](https://threejs.org/manual/en/rendertargets.html)
+- [Three.js 离屏渲染](https://threejs.org/docs/pages/WebGLRenderTarget.html)
 - [ONNX Runtime Web 的 CPU 推理和离线部署](https://onnxruntime.ai/docs/tutorials/web/deploy.html)
 - [ORB-SLAM3 官方仓库](https://github.com/UZ-SLAMLab/ORB_SLAM3)
 - [CodeMapping：稀疏 SLAM 与稠密建图的分工](https://arxiv.org/abs/2107.08994)

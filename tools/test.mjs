@@ -1,88 +1,334 @@
 import assert from 'node:assert/strict';
-import {spawn} from 'node:child_process';
-import {existsSync} from 'node:fs';
-import {mkdir,writeFile} from 'node:fs/promises';
-import {once} from 'node:events';
-import {chromium} from 'playwright-core';
-const args=process.argv.slice(2),mode=args[0]||'smoke',out='output/playwright';
-await mkdir(out,{recursive:true});
-const binary=process.env.AEROMIND_BROWSER||[
-  'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe','C:/Program Files/Google/Chrome/Application/chrome.exe',
-  '/usr/bin/chromium','/usr/bin/google-chrome'].find(existsSync);
-if(!binary)throw Error('A local Edge/Chrome executable is required; set AEROMIND_BROWSER.');
-const server=spawn(process.env.AEROMIND_PYTHON||'python',['-u','tools/launch.py','--port','0','--no-browser'],{windowsHide:true});
-server.stderr.on('data',b=>process.stderr.write(b));
-const url=await new Promise((resolve,reject)=>{server.stdout.once('data',b=>resolve(String(b).trim()));server.once('error',reject);server.once('exit',n=>reject(Error('Host exit '+n)));});
-const browser=await chromium.launch({executablePath:binary,headless:!args.includes('--headed'),
-  args:['--no-first-run','--disable-background-timer-throttling','--disable-renderer-backgrounding','--disable-backgrounding-occluded-windows']});
-try{
-  const context=await browser.newContext({viewport:{width:1280,height:720},deviceScaleFactor:1});
-  const errors=[],external=[],page=await context.newPage();
-  await context.route('**/*',r=>{const u=new URL(r.request().url());
-    if(u.hostname!=='127.0.0.1'&&!['data:','blob:'].includes(u.protocol)){external.push(u.hostname);return r.abort();}return r.continue();});
-  page.on('pageerror',e=>{errors.push(e.message);console.error('Browser error',e.message);});
-  page.on('console',m=>{if(m.type()==='error')console.error(m.text());});
-  await page.goto(url+'?verify=1');await page.waitForFunction(()=>window.aeromind?.ready||window.aeromind?.error,null,{timeout:55000});
-  const hardware=await page.evaluate(()=>{const g=window.aeromind,gl=g.view.renderer.getContext(),ext=gl.getExtension('WEBGL_debug_renderer_info');
-    return {renderer:ext?gl.getParameter(ext.UNMASKED_RENDERER_WEBGL):gl.getParameter(gl.RENDERER),webgl:gl.getParameter(gl.VERSION),
-      viewport:[innerWidth,innerHeight],error:g.error,browser:navigator.userAgent};});
-  assert.equal(hardware.error,'');console.log(JSON.stringify(hardware));
-  await page.waitForFunction(()=>window.aeromind.frames.size>0,null,{timeout:20000});
-  await page.screenshot({path:out+'/city.png'});
-  const report={mode,hardware,external,errors};
-  if(mode==='smoke'||mode==='standard'){
-    const results=[];
-    for(let i=0;i<(mode==='smoke'?1:10);i++){
-      const result=await page.evaluate(async seed=>{
-        const g=window.aeromind;g.verifiedMode=true;await g.pending;
-        g.reset({...g.sim.s.config,chapter:2,model:'mature',mode:'课程',fleet:1,seed});
+import { spawn } from 'node:child_process';
+import { createServer } from 'node:net';
+import { existsSync } from 'node:fs';
+import { mkdir, writeFile, unlink } from 'node:fs/promises';
+import path from 'node:path';
+import { randomUUID } from 'node:crypto';
+import { collect } from './collect.mjs';
+import { scenarios } from './scenarios.mjs';
+import { evaluateVision, profileNetwork } from './vision-eval.mjs';
+import { chromium } from 'playwright-core';
+const args = process.argv.slice(2),
+  mode = args[0] || 'smoke',
+  out = 'output/playwright';
+await mkdir(out, { recursive: true });
+const binary =
+  process.env.AEROMIND_BROWSER ||
+  [
+    'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe',
+    'C:/Program Files/Google/Chrome/Application/chrome.exe',
+    '/usr/bin/chromium',
+    '/usr/bin/google-chrome',
+  ].find(existsSync);
+if (!binary) throw Error('A local Edge/Chrome executable is required; set AEROMIND_BROWSER.');
+let port = 0;
+if (process.env.AEROMIND_APP) {
+  const reserve = createServer();
+  await new Promise((resolve) => reserve.listen(0, '127.0.0.1', resolve));
+  port = reserve.address().port;
+  await new Promise((resolve) => reserve.close(resolve));
+}
+const sessionFile = path.resolve(out, '.session-' + randomUUID());
+await writeFile(sessionFile, 'test');
+const server = spawn(
+  process.env.AEROMIND_APP || process.env.AEROMIND_PYTHON || 'python',
+  [
+    ...(process.env.AEROMIND_APP ? [] : ['-u', 'tools/launch.py']),
+    '--port',
+    String(port),
+    '--no-browser',
+    '--session-file',
+    sessionFile,
+  ],
+  { windowsHide: true }
+);
+server.stderr.on('data', (b) => process.stderr.write(b));
+const url = port
+  ? 'http://127.0.0.1:' + port + '/'
+  : await new Promise((resolve, reject) => {
+      server.stdout.once('data', (b) => resolve(String(b).trim()));
+      server.once('error', reject);
+      server.once('exit', (n) => reject(Error('Host exit ' + n)));
+    });
+if (port) {
+  let ready = false;
+  for (let i = 0; i < 180 && !ready; i++) {
+    try {
+      ready = (await (await fetch(url + 'identity')).text()) === 'AeroMind-2.5D';
+    } catch {}
+    if (!ready) await new Promise((resolve) => setTimeout(resolve, 250));
+  }
+  if (!ready) {
+    server.kill();
+    throw Error('Packaged host failed to start.');
+  }
+}
+const browser = await chromium.launch({
+  executablePath: binary,
+  headless: !args.includes('--headed'),
+  args: [
+    '--no-first-run',
+    '--disable-background-timer-throttling',
+    '--disable-renderer-backgrounding',
+    '--disable-backgrounding-occluded-windows',
+  ],
+});
+try {
+  const context = await browser.newContext({ viewport: { width: 1280, height: 720 }, deviceScaleFactor: 1 });
+  const errors = [],
+    external = [],
+    page = await context.newPage();
+  await context.route('**/*', (r) => {
+    const u = new URL(r.request().url());
+    if (u.hostname !== '127.0.0.1' && !['data:', 'blob:'].includes(u.protocol)) {
+      external.push(u.hostname);
+      return r.abort();
+    }
+    return r.continue();
+  });
+  page.on('pageerror', (e) => {
+    errors.push(e.message);
+    console.error('Browser error', e.message);
+  });
+  page.on('console', (m) => {
+    if (m.type() === 'error') console.error(m.text());
+  });
+  await page.goto(url + '?verify=1');
+  await page.waitForFunction(() => window.aeromind?.ready || window.aeromind?.error, null, {
+    timeout: 55000,
+  });
+  const hardware = await page.evaluate(() => {
+    const g = window.aeromind,
+      gl = g.view.renderer.getContext(),
+      ext = gl.getExtension('WEBGL_debug_renderer_info');
+    return {
+      renderer: ext ? gl.getParameter(ext.UNMASKED_RENDERER_WEBGL) : gl.getParameter(gl.RENDERER),
+      webgl: gl.getParameter(gl.VERSION),
+      viewport: [innerWidth, innerHeight],
+      drawingBuffer: [gl.drawingBufferWidth, gl.drawingBufferHeight],
+      error: g.error,
+      browser: navigator.userAgent,
+    };
+  });
+  assert.equal(hardware.error, '');
+  console.log(JSON.stringify(hardware));
+  await page.waitForFunction(() => window.aeromind.frames.size > 0, null, { timeout: 20000 });
+  if (mode==='smoke'||mode==='native') await page.screenshot({ path: out + '/' + mode + '-city.png' });
+  const report = { mode, hardware, external, errors, packaged: !!process.env.AEROMIND_APP };
+  if (mode === 'smoke' || mode === 'standard') {
+    const results = [];
+    for (let i = 0; i < (mode === 'smoke' ? 1 : 10); i++) {
+      const result = await page.evaluate(async (seed) => {
+        const g = window.aeromind;
+        g.verifiedMode = true;
+        await g.pending;
+        g.reset({ ...g.sim.s.config, chapter: 2, model: 'mature', mode: '课程', fleet: 1, seed });
         document.querySelector('#dispatch').click();
-        for(let k=0;k<28 && !g.sim.s.completed.length;k++)await g.advance(5,.20);
-        const d=g.sim.s.drones[0];return {seed,receipt:g.sim.s.completed[0]??null,phase:d.phase,p:d.p,
-          pose:d.pose,destination:d.destination,route:d.route.slice(0,4),signed:d.signed,accepted:d.accepted,
-          log:g.sim.s.log.slice(-8),vision:d.evidence,dropped:g.metrics.dropped};
-      },2101+i);
-      results.push(result);console.log('order',i+1,JSON.stringify(result.receipt??result));
+        for (let k = 0; k < 28 && !g.sim.s.completed.length; k++) await g.advance(5, 0.2);
+        const d = g.sim.s.drones[0];
+        return {
+          seed,
+          receipt: g.sim.s.completed[0] ?? null,
+          phase: d.phase,
+          p: d.p,
+          pose: d.pose,
+          destination: d.destination,
+          route: d.route.slice(0, 4),
+          signed: d.signed,
+          accepted: d.accepted,
+          log: g.sim.s.log.slice(-8),
+          vision: d.evidence,
+          dropped: g.metrics.dropped,
+        };
+      }, 2101 + i);
+      results.push(result);
+      console.log('order', i + 1, JSON.stringify(result.receipt ?? result));
     }
-    report.results=results;await writeFile(out+'/'+mode+'.json',JSON.stringify(report,null,2));
-    assert.ok(results.filter(r=>r.receipt?.signed&&r.receipt.result==='已签收并归港').length>=Math.ceil(results.length*.9));
-    assert.ok(results.every(r=>r.receipt?.collisions===0&&r.receipt.error<=1.5&&r.accepted>0));
-  }else if(mode==='native'){
-    const runs=[];for(const fleet of [1,3]){
-      await page.evaluate(async fleet=>{const g=window.aeromind;g.verifiedMode=true;await g.pending;g.reset({...g.sim.s.config,chapter:fleet===1?2:5,fleet});
-        g.sim.order(1);if(fleet>1){g.sim.order(2);g.sim.order(3);}g.verifiedMode=false;},fleet);
+    report.results = results;
+    await writeFile(out + '/' + mode + '.json', JSON.stringify(report, null, 2));
+    assert.ok(
+      results.filter((r) => r.receipt?.signed && r.receipt.result === '已签收并归港').length >=
+        Math.ceil(results.length * 0.9)
+    );
+    assert.ok(results.every((r) => r.receipt?.collisions === 0 && r.receipt.error <= 1.5 && r.accepted > 0));
+  } else if (mode === 'perception') {
+    report.metrics = await evaluateVision(page);
+    report.network = await profileNetwork(page);
+    console.log(JSON.stringify(report.metrics));
+    assert.ok(
+      report.metrics.recall >= 0.85 &&
+        report.metrics.precision >= 0.9 &&
+        report.metrics.coveredFalseDetections === 0
+    );
+  } else if (mode === 'scenarios') {
+    report.cases = await scenarios(page);
+    await writeFile(out + '/' + mode + '.json', JSON.stringify(report, null, 2));
+    assert.equal(report.cases.coveredBefore.signed, false);
+    assert.ok(report.cases.coveredAfter.receipts.some((r) => r.signed && r.result === '已签收并归港'));
+    assert.ok(report.cases.branches.every((b) => b.same));
+    assert.ok(report.cases.fleetShared.drones.some((d) => d.received > 0));
+    assert.ok(report.cases.fleetLocal.drones.every((d) => d.received === 0));
+    for (const group of [report.cases.fleetLocal, report.cases.fleetShared]) {
+      assert.equal(group.receipts.length, 3);
+      assert.ok(group.receipts.every((r) => r.result === '已签收并归港' && r.collisions === 0));
+    }
+    assert.ok(report.cases.checkpoints.at(-1).receipts.some((r) => r.signed));
+  } else if (mode === 'dataset') {
+    report.data = await collect(page);
+    console.log(JSON.stringify(report.data));
+  } else if (mode === 'native') {
+    const runs = [];
+    for (const fleet of [1, 3]) {
+      await page.evaluate(async (fleet) => {
+        const g = window.aeromind;
+        g.verifiedMode = true;
+        await g.pending;
+        g.reset({ ...g.sim.s.config, chapter: fleet === 1 ? 2 : 5, fleet });
+        g.sim.order(1);
+        if (fleet > 1) {
+          g.sim.order(2);
+          g.sim.order(3);
+        }
+        g.verifiedMode = false;
+      }, fleet);
       await page.waitForTimeout(2800);
-      await page.evaluate(()=>{const g=window.aeromind;g.metrics.intervals=[];g.metrics.inference=[];g.sim.latencies=[];});
-      await page.waitForTimeout(24000);
-      runs.push(await page.evaluate(()=>{const g=window.aeromind,p=(a,n)=>a.length?[...a].sort((x,y)=>x-y)[Math.floor((a.length-1)*n)]:null;
-        return {fleet:g.sim.s.drones.length,frames:g.metrics.intervals.length,medianFps:1000/p(g.metrics.intervals,.5),
-          p95FrameMs:p(g.metrics.intervals,.95),p95InferenceMs:p(g.metrics.inference,.95),p95ControlMs:p(g.sim.latencies,.95),
-          controlSamples:g.sim.latencies.length,draws:g.view.renderer.info.render.calls,discarded:g.metrics.dropped};}));
-      console.log(JSON.stringify(runs.at(-1)));
-    }report.runs=runs;
-  }else if(mode==='lecture'){
-    const runs=[];for(let i=0;i<10;i++){
-      const r=await page.evaluate(async()=>{const g=window.aeromind;g.verifiedMode=true;await g.pending;g.beginLecture();
-        for(let sec=0;sec<420;sec+=7)await g.advance(7,.23);
-        if(g.lectureTime>=0)await g.advance(.1,.2);
-        return {finished:g.lectureTime<0,outcomes:g.lectureReport,simTime:g.sim.s.time,frames:g.serial,
-          drones:g.sim.s.drones.map(d=>({sent:d.shared,received:d.received,lost:d.lost,poses:d.poseN})),error:g.error};
+      await page.evaluate(() => {
+        const g = window.aeromind;
+        g.metrics.intervals = [];
+        g.metrics.inference = [];
+        g.sim.latencies = [];
       });
-      runs.push(r);console.log('lecture',i+1,r.finished,r.outcomes.length,r.outcomes.filter(v=>v.signed).length);
-      report.runs=runs;await writeFile(out+'/lecture.json',JSON.stringify(report,null,2));assert.ok(r.finished&&!r.error);
+      await page.waitForTimeout(24000);
+      runs.push(
+        await page.evaluate(() => {
+          const g = window.aeromind,
+            p = (a, n) => (a.length ? [...a].sort((x, y) => x - y)[Math.floor((a.length - 1) * n)] : null);
+          return {
+            fleet: g.sim.s.drones.length,
+            frames: g.metrics.intervals.length,
+            medianFps: 1000 / p(g.metrics.intervals, 0.5),
+            p95FrameMs: p(g.metrics.intervals, 0.95),
+            p95InferenceMs: p(g.metrics.inference, 0.95),
+            p95ControlMs: p(g.sim.latencies, 0.95),
+            controlSamples: g.sim.latencies.length,
+            draws: g.view.renderer.info.render.calls,
+            discarded: g.metrics.dropped,
+          };
+        })
+      );
+      console.log(JSON.stringify(runs.at(-1)));
     }
-  }else if(mode==='interaction'){
-    await page.getByRole('button',{name:'中文指令',exact:true}).click();await page.locator('#parse').click();
-    assert.match(await page.locator('#parsed').innerText(),/体育馆/);await page.locator('#submit-command').click();
-    await page.getByRole('button',{name:'布置挑战',exact:true}).click();await page.locator('#event-position').selectOption('1');
-    await page.locator('#place-event').click();await page.locator('#map').click();await page.locator('#evidence').click();
-    await page.locator('#mask').click();await page.locator('#next-layer').click();await page.locator('#laboratory').click();
-    await page.locator('#save-snap').click();await page.waitForFunction(()=>!!window.aeromind.snapshot);
-    await page.locator('#adaptive').click();await page.locator('#settings').click();await page.locator('#sharing').selectOption('no');
-    await page.locator('#apply').click();await page.locator('#reset').click();
-    report.result=await page.evaluate(()=>({shared:window.aeromind.sim.s.config.share,time:window.aeromind.sim.s.time}));
-    assert.equal(report.result.shared,false);
-  }else throw Error('Unknown verification mode.');
-  await writeFile(out+'/'+mode+'.json',JSON.stringify(report,null,2));
-  assert.deepEqual(errors,[]);assert.deepEqual(external,[]);console.log('PASS',mode);
-}finally{await browser.close();server.kill();}
+    report.runs = runs;
+    await writeFile(out + '/native.json', JSON.stringify(report, null, 2));
+    assert.ok(runs.every((r) => r.medianFps >= 30 && r.p95ControlMs <= 350 && r.controlSamples > 0));
+  } else if (mode === 'lecture-live') {
+    const runs = [];
+    for (let i = 0; i < 10; i++) {
+      const started = Date.now();
+      await page.evaluate(() => {
+        const g = window.aeromind;
+        g.verifiedMode = false;
+        g.beginLecture();
+        g.metrics.intervals = [];
+        g.metrics.inference = [];
+      });
+      await page.waitForFunction(() => window.aeromind.lectureTime < 0 || !!window.aeromind.error, null, {
+        polling: 1000,
+        timeout: 560000,
+      });
+      const row = await page.evaluate(() => {
+        const g = window.aeromind,
+          p = (a, n) => (a.length ? [...a].sort((x, y) => x - y)[Math.floor((a.length - 1) * n)] : null);
+        return {
+          ended: g.lectureTime < 0,
+          receipts: g.lectureReport,
+          error: g.error,
+          frames: g.serial,
+          medianFps: 1000 / p(g.metrics.intervals, 0.5),
+          p95InferenceMs: p(g.metrics.inference, 0.95),
+          p95ControlMs: p(g.sim.latencies, 0.95),
+          ages: g.sim.s.drones.map((d) => ({
+            drone: d.id,
+            sent: d.shared,
+            received: d.received,
+            expired: d.lost,
+          })),
+        };
+      });
+      row.wallSeconds = (Date.now() - started) / 1000;
+      runs.push(row);
+      report.runs = runs;
+      console.log('wall clock lecture', i + 1, row.wallSeconds, row.receipts.length, row.error);
+      await writeFile(out + '/lecture-live.json', JSON.stringify(report, null, 2));
+      assert.ok(row.ended && !row.error);
+    }
+  } else if (mode === 'lecture') {
+    const runs = [];
+    for (let i = 0; i < 10; i++) {
+      const r = await page.evaluate(async () => {
+        const g = window.aeromind;
+        g.verifiedMode = true;
+        await g.pending;
+        g.beginLecture();
+        for (let sec = 0; sec < 420; sec += 7) await g.advance(7, 0.23);
+        if (g.lectureTime >= 0) await g.advance(0.1, 0.2);
+        return {
+          finished: g.lectureTime < 0,
+          outcomes: g.lectureReport,
+          simTime: g.sim.s.time,
+          frames: g.serial,
+          drones: g.sim.s.drones.map((d) => ({
+            sent: d.shared,
+            received: d.received,
+            lost: d.lost,
+            poses: d.poseN,
+          })),
+          error: g.error,
+        };
+      });
+      runs.push(r);
+      console.log('lecture', i + 1, r.finished, r.outcomes.length, r.outcomes.filter((v) => v.signed).length);
+      report.runs = runs;
+      await writeFile(out + '/lecture.json', JSON.stringify(report, null, 2));
+      assert.ok(r.finished && !r.error);
+    }
+  } else if (mode === 'interaction') {
+    await page.getByRole('button', { name: '中文指令', exact: true }).click();
+    await page.locator('#parse').click();
+    assert.match(await page.locator('#parsed').innerText(), /体育馆/);
+    await page.locator('#submit-command').click();
+    await page.getByRole('button', { name: '布置挑战', exact: true }).click();
+    await page.locator('#event-position').selectOption('1');
+    await page.locator('#place-event').click();
+    await page.locator('#map').click();
+    await page.locator('#evidence').click();
+    await page.locator('#mask').click();
+    await page.locator('#next-layer').click();
+    await page.locator('#laboratory').click();
+    await page.locator('#save-snap').click();
+    await page.waitForFunction(() => !!window.aeromind.snapshot);
+    await page.locator('#adaptive').click();
+    await page.locator('#settings').click();
+    await page.locator('#sharing').selectOption('no');
+    await page.locator('#apply').click();
+    await page.locator('#reset').click();
+    report.result = await page.evaluate(() => ({
+      shared: window.aeromind.sim.s.config.share,
+      time: window.aeromind.sim.s.time,
+    }));
+    assert.equal(report.result.shared, false);
+  } else throw Error('Unknown verification mode.');
+  await writeFile(out + '/' + mode + '.json', JSON.stringify(report, null, 2));
+  assert.deepEqual(errors, []);
+  assert.deepEqual(external, []);
+  console.log('PASS', mode);
+} finally {
+  await browser.close();
+  await unlink(sessionFile).catch(() => {});
+  if (server.exitCode === null && server.signalCode === null) {
+    const timeout = setTimeout(() => server.kill(), 9000);
+    await new Promise((resolve) => server.once('exit', resolve));
+    clearTimeout(timeout);
+  }
+}

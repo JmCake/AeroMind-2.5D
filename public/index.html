@@ -1,50 +1,133 @@
 <!doctype html>
-<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#172f30"><title>AeroMind · 无人机配送进化都市</title>
-<link rel="icon" href="data:,"><link rel="stylesheet" href="./style.css"></head>
-<body>
-<header class="top">
-  <div class="brand"><i class="mark"></i><div><b>AeroMind</b><small>无人机配送进化都市</small></div></div>
-  <nav aria-label="游戏模式"><button data-mode="课程" class="active">课程模式</button><button data-mode="运营">城市运营</button><button data-mode="挑战">现场挑战</button></nav>
-  <div class="headright"><span class="engine"><i></i><span id="engine">启动推理</span></span>
-  <button id="lecture" class="outline">课堂讲演</button><button id="settings" class="head-icon" title="设置与操作" aria-label="设置与操作">☷</button></div>
-</header>
-<main>
-  <section class="viewport" id="viewport" aria-label="城市全景">
-    <div class="maptitle"><div class="kicker"><i></i> 南港 · 城市空域</div><h1 id="maptitle">城市全景</h1></div>
-    <div class="maptools"><button id="map" title="切换认知地图">认知地图</button><button id="camera" title="切换顶视或斜俯视">正顶视</button>
-    <button id="follow" title="锁定无人机">跟随</button></div>
-    <canvas id="knowledge" aria-label="认知地图，可点击查看证据" hidden></canvas>
-    <div id="labels" aria-hidden="true"></div>
-    <div id="notice" role="status" hidden></div>
-    <div class="navigation"><button id="minus" aria-label="缩小">−</button><button id="plus" aria-label="放大">＋</button>
-    <button id="rotate" aria-label="旋转视角">↻</button></div>
-    <div class="mapfoot"><div><i class="live"></i><b id="call">蜂鸟 01</b><span id="phase">待命</span></div>
-    <div><span>高度</span> <b id="alt">—</b></div><div><span>电量</span> <b id="battery">—</b></div>
-    <div class="clock"><span id="fps">— FPS</span><button id="pause" aria-label="暂停仿真">Ⅱ</button><button id="speed" title="切换仿真速度">1×</button><b id="clock">00:00</b></div></div>
-  </section>
-  <aside>
-    <section class="order-card"><div class="sectionhead"><span><i class="accent"></i>配送调度台</span><select id="drone" aria-label="观察无人机"><option value="0">蜂鸟 01</option></select></div>
-    <div class="order-path"><div class="line-symbol"><i></i><em></em><i></i></div><div class="endpoints">
-      <div><small>取件点</small><strong>南港物流枢纽</strong></div>
-      <div><small>收货点</small><select id="station" aria-label="收货点"><option value="1">大学图书馆</option><option value="2">社区医院</option><option value="3">中央工程站</option><option value="4">学园宿舍</option></select></div>
-    </div></div>
-    <div class="order-meta"><span id="mass">载荷 0.50 kg</span><span id="deadline">时限 115 s</span></div>
-    <button class="primary" id="dispatch">接单并起飞 <b>↗</b></button>
-    <div class="minor"><button id="events">布置挑战</button><button id="command">中文指令</button><button id="laboratory">对照实验</button></div></section>
-    <section class="sensor-card"><div class="sectionhead"><span><i class="accent mint"></i>机载视觉</span><button id="eye-mode">下视相机 ▾</button></div>
-    <div class="monitor"><canvas id="feed" width="192" height="144" aria-label="原始机载画面与模型输出"></canvas>
-    <span id="frame">等待采样</span></div>
-    <div class="sensor-meta"><span id="vision-label">等待图像证据</span><button id="evidence">查看证据 ↗</button></div></section>
-    <section class="decision"><div class="sectionhead"><span><i class="accent"></i>当前决策</span><button id="journal">任务记录 ↗</button></div><p id="reason">等待调度</p></section>
-  </aside>
-</main>
-<footer><div class="coursehead"><strong>技术进化</strong><span id="lesson">航点与保护</span><button id="reset">重置实验 ↺</button></div>
-  <div class="chapters">
-    <button data-chapter="1" class="chosen"><i>01</i><span>机械航线</span></button><button data-chapter="2"><i>02</i><span>视觉觉醒</span></button>
-    <button data-chapter="3"><i>03</i><span>空间认知</span></button><button data-chapter="4"><i>04</i><span>自主决策</span></button>
-    <button data-chapter="5"><i>05</i><span>协同物流</span></button>
-  </div></footer>
-<dialog id="panel"><header><h2 id="panel-title"></h2><button id="close" aria-label="关闭面板">×</button></header><div id="panel-body"></div></dialog>
-<div id="fatal" hidden role="alert"></div>
-<script type="module" src="./game.js"></script></body></html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="theme-color" content="#172f30" />
+    <title>AeroMind · 无人机配送进化都市</title>
+    <link rel="icon" href="./aeromind.ico" />
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <header class="top">
+      <div class="brand">
+        <i class="mark"></i>
+        <div><b>AeroMind</b><small>无人机配送进化都市</small></div>
+      </div>
+      <nav aria-label="游戏模式">
+        <button data-mode="课程" class="active">课程模式</button><button data-mode="运营">城市运营</button
+        ><button data-mode="挑战">现场挑战</button>
+      </nav>
+      <div class="headright">
+        <span class="engine"><i></i><span id="engine">启动推理</span></span>
+        <button id="lecture" class="outline">课堂讲演</button
+        ><button id="settings" class="head-icon" title="设置与操作" aria-label="设置与操作">☷</button>
+      </div>
+    </header>
+    <main>
+      <section class="viewport" id="viewport" aria-label="城市全景">
+        <div class="maptitle">
+          <div class="kicker"><i></i> 南港 · 城市空域</div>
+          <h1 id="maptitle">城市全景</h1>
+        </div>
+        <div class="maptools">
+          <button id="map" title="切换认知地图">认知地图</button
+          ><button id="camera" title="切换顶视或斜俯视">正顶视</button>
+          <button id="follow" title="锁定无人机">跟随</button>
+        </div>
+        <canvas id="knowledge" aria-label="认知地图，可点击查看证据" hidden></canvas>
+        <div id="labels" aria-hidden="true"></div>
+        <div id="notice" role="status" hidden></div>
+        <div class="navigation">
+          <button id="minus" aria-label="缩小">−</button><button id="plus" aria-label="放大">＋</button>
+          <button id="rotate" aria-label="旋转视角">↻</button>
+        </div>
+        <div class="mapfoot">
+          <div><i class="live"></i><b id="call">蜂鸟 01</b><span id="phase">待命</span></div>
+          <div><span>高度</span> <b id="alt">—</b></div>
+          <div><span>电量</span> <b id="battery">—</b></div>
+          <div class="clock">
+            <span id="fps">— FPS</span><button id="pause" aria-label="暂停仿真">Ⅱ</button
+            ><button id="speed" title="切换仿真速度">1×</button><b id="clock">00:00</b>
+          </div>
+        </div>
+      </section>
+      <aside>
+        <section class="order-card">
+          <div class="sectionhead">
+            <span><i class="accent"></i>配送调度台</span
+            ><select id="drone" aria-label="观察无人机">
+              <option value="0">蜂鸟 01</option>
+            </select>
+          </div>
+          <div class="order-path">
+            <div class="line-symbol"><i></i><em></em><i></i></div>
+            <div class="endpoints">
+              <div><small>取件点</small><strong>南港物流枢纽</strong></div>
+              <div>
+                <small>收货点</small
+                ><select id="station" aria-label="收货点">
+                  <option value="1">大学图书馆</option>
+                  <option value="2">社区医院</option>
+                  <option value="3">中央工程站</option>
+                  <option value="4">学园宿舍</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="order-meta">
+            <span id="mass">载荷 0.50 kg</span><span id="deadline">时限 115 s</span>
+          </div>
+          <button class="primary" id="dispatch">接单并起飞 <b>↗</b></button>
+          <div class="minor">
+            <button id="events">布置挑战</button><button id="command">中文指令</button
+            ><button id="laboratory">对照实验</button>
+          </div>
+        </section>
+        <section class="sensor-card">
+          <div class="sectionhead">
+            <span><i class="accent mint"></i>机载视觉</span><button id="eye-mode">下视相机 ▾</button>
+          </div>
+          <div class="monitor">
+            <canvas id="feed" width="192" height="144" aria-label="原始机载画面与模型输出"></canvas>
+            <span id="frame">等待采样</span>
+          </div>
+          <div class="sensor-meta">
+            <span id="vision-label">等待图像证据</span><button id="evidence">查看证据 ↗</button>
+          </div>
+        </section>
+        <section class="decision">
+          <div class="sectionhead">
+            <span><i class="accent"></i>当前决策</span><button id="journal">任务记录 ↗</button>
+          </div>
+          <p id="reason">等待调度</p>
+          <div class="flight-steps" aria-label="订单进度">
+            <span>装载</span><span>巡航</span><span>识别</span><span>交接</span><span>归港</span>
+          </div>
+          <div id="recent" class="recent">尚未接单</div>
+        </section>
+      </aside>
+    </main>
+    <footer>
+      <div class="coursehead">
+        <strong>技术进化</strong><span id="lesson">航点与保护</span><button id="reset">重置实验 ↺</button>
+      </div>
+      <div class="chapters">
+        <button data-chapter="1" class="chosen"><i>01</i><span>机械航线</span></button
+        ><button data-chapter="2"><i>02</i><span>视觉觉醒</span></button>
+        <button data-chapter="3"><i>03</i><span>空间认知</span></button
+        ><button data-chapter="4"><i>04</i><span>自主决策</span></button>
+        <button data-chapter="5"><i>05</i><span>协同物流</span></button>
+      </div>
+    </footer>
+    <dialog id="panel">
+      <header>
+        <h2 id="panel-title"></h2>
+        <button id="close" aria-label="关闭面板">×</button>
+      </header>
+      <div id="panel-body"></div>
+    </dialog>
+    <div id="fatal" hidden role="alert"></div>
+    <script type="module" src="./game.js"></script>
+  </body>
+</html>

@@ -1,5 +1,7 @@
 """Train the tabletop city's roof-sign classifier on CPU. See export.py for ONNX."""
 import argparse
+import base64
+import gzip
 import json
 from pathlib import Path
 
@@ -60,6 +62,12 @@ def examples(split, per_family):
             gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY).astype(np.float32) / 255
             images.append(gray)
             labels.append(label)
+    data = json.loads(gzip.decompress((ROOT / "Vision" / "data" / "roof-crops.json.gz").read_bytes()))
+    for sample in data["rows"]:
+        if sample["split"] == split:
+            pixels = np.frombuffer(base64.b64decode(sample["crop"]), dtype=np.uint8).reshape(24, 24)
+            images.append(pixels.astype(np.float32) / 255)
+            labels.append(sample["id"])
     return torch.from_numpy(np.array(images)[:, None]), torch.tensor(labels)
 
 
@@ -105,7 +113,8 @@ def train():
     (args.out / "training.json").write_text(json.dumps({
         "seed": 617, "classes": NAMES, "split_families": SEEDS, "samples": [len(x), len(vx), len(tx)],
         "torch": torch.__version__, "device": "cpu", "curve": log,
-        "split_unit": "independent print, lens and lighting families",
+        "split_unit": "independent print, lens and lighting families plus disjoint rendered city seeds",
+        "rendered_maps": json.loads(gzip.decompress((ROOT / "Vision" / "data" / "roof-crops.json.gz").read_bytes()))["splits"],
     }, indent=2), encoding="utf-8")
     print("CPU training finished", log[-1], flush=True)
 

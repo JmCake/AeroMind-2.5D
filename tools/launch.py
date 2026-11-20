@@ -49,6 +49,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--port", type=int, default=8765)
     parser.add_argument("--no-browser", action="store_true")
+    parser.add_argument("--session-file", type=Path, help=argparse.SUPPRESS)
     opts = parser.parse_args()
     root = Path(getattr(sys, "_MEIPASS", Path(__file__).resolve().parents[1])) / "dist"
     if not (root / "game.js").is_file():
@@ -78,10 +79,14 @@ def main():
     server.last_seen = time.monotonic()
     if not opts.no_browser:
         show(url)
-
+    if opts.session_file or not opts.no_browser:
         def idle_watch():
-            while time.monotonic() - server.last_seen < 180:
-                time.sleep(15)
+            while True:
+                if opts.session_file and not opts.session_file.exists():
+                    break
+                if not opts.no_browser and time.monotonic() - server.last_seen >= 180:
+                    break
+                time.sleep(.3 if opts.session_file else 10)
             server.shutdown()
         threading.Thread(target=idle_watch, daemon=True).start()
     try:
