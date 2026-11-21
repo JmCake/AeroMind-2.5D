@@ -1,16 +1,24 @@
 # AeroMind-2.5D · 无人机配送进化都市
 
-在一座持续运转的微缩港城里，接单、观察无人机看到的画面、改变空域条件，再比较它如何完成配送。中文课堂模式可以在一台普通 Windows 核显电脑上离线运行。
+双击打开，点 **开始配送**，看无人机从南港起飞，把第一份包裹送到大学图书馆。旁边的两张图解释它怎样认出屋顶的收件柜。全程可以在普通 Windows 核显电脑上离线运行。
 
-![课堂版运行中，右侧显示当前无人机实际看到的画面](verification/classroom.png)
+![第一课首页，左侧是配送现场，右侧是相机原图和计算机视觉识别图](verification/guide.png)
 
 ## 启动课堂版
 
-下载 Windows x64 单文件版，复制到课堂电脑后双击 `AeroMind.exe`。程序在本机启动静态服务，并使用现有的 Edge 或 Chrome 打开独立应用窗口。城市、模型和 WebAssembly 运行库均随 EXE 分发。只需支持 WebGL 2 的浏览器。关闭窗口后，本地服务会在心跳停止约三分钟后退出。[下载离线课堂版](https://github.com/JmCake/AeroMind-2.5D/releases/download/v1.0.0/AeroMind.exe)
+下载 Windows x64 版，双击 `AeroMind.exe`。程序使用电脑现有的 Edge 或 Chrome 打开课堂窗口，城市、模型和运行库已包含在文件中。浏览器需要支持 WebGL 2。关闭窗口约三分钟后，本地服务自行退出。[下载 Windows 离线版](https://github.com/JmCake/AeroMind-2.5D/releases/download/v1.1.0/AeroMind.exe)
 
-选择底部**视觉觉醒**，选中**大学图书馆**，点击**接单并起飞**。右侧可切换实际的下视和航向相机。下视画面出现柜标时，打开**查看证据**，可以看到原始帧编号、模型、像素分割和耗时。柜台在标记通过复核且无人机落稳后签收，返航结束后在**任务记录**查看结果。
+| 入门课 | 你要做什么 | 观察什么 |
+| --- | --- | --- |
+| 把包裹送到图书馆 | 点 **开始配送**，归港后点 **下一课** | 左图是相机原图。右图在同一帧上标出模型实际认出的柜标。 |
+| 柜标被挡住了怎么办？ | 点 **遮住柜标并起飞**，到达后点 **移开遮挡** | 对比遮挡前后的识别结果，看无人机何时能交付包裹。 |
+| 让三架无人机一起送货 | 点 **派出三架无人机** | 三架分别接单。地图呈现三条实际航迹，右侧跟随蜂鸟 01。 |
 
-## 课堂操作
+起飞前的图片标为「识别示例」，来自一次真实配送。接单后，两图一起切换至当前机载帧。归港后可以停下来回看本次飞行的识别结果。
+
+## 自由实验
+
+想自己选模型、改天气或主持七分钟讲演，可以从右上角进入 **自由实验**。点击左上角 **返回入门课** 可回到刚才的课题。
 
 | 想观察的现象 | 操作 |
 | --- | --- |
@@ -33,7 +41,13 @@
 - **信息边界。** 工作线程接收像素、相机尺寸、时间、帧号和模型选择。主持人标签和航迹排除在推理画面之外。城市几何用于渲染、模拟测距、碰撞、柜台交接和独立评测。规划读取订单授权的目标区与通告、机载观测形成的地图和通信结果。包裹在指定静止柜台办理交接。
 - **对照口径。** 同条件重演保存城市、外部随机流、任务队列、动力学、地图、预约和消息，并用保存的实际相机帧预热图像工作线程。各分支随后采集自己的画面。异步调度可以产生运行差异。能耗单位是游戏电量百分点，每步累计悬停时间、移动距离和爬升代价。
 
-## 发行包实机验收
+## 实机验收
+
+三节入门课按 1× 时钟操作，核对相机原图、模型输出、实际订单回执、窄屏排版和自由实验往返。新版的逐课记录关联 EXE 的 SHA-256。[阅读 v1.1.0 入门课验收](verification/guide.json)
+
+本机 Intel Arc 核显以 1280 × 720 运行三节课。五单全部签收归港，零碰撞，三节课的中位帧率均为 120.5 FPS。遮挡实验中，移开物体后，同一架无人机的机载画面重新出现了图书馆柜标识别框。
+
+### v1.0.0 游戏与算法验收
 
 测试机为 Windows 11、Intel Core Ultra 5 125H、31.6 GiB 内存和 Intel Arc 核显。Edge 使用 WebGL 2，经 ANGLE 调用 Direct3D 11。性能测试使用 1280 × 720 的可见窗口，其中城市画布为 929 × 581。单机和三机分别预热后采样 24 秒。神经网络使用单线程 WebAssembly CPU 后端。
 
@@ -63,7 +77,7 @@ npm run build
 python tools/launch.py
 ```
 
-首次构建需要下载 npm 依赖。完成后可离线重复启动。模型权重已签入仓库。重新打包 Windows 版时，在 Python 3.11 虚拟环境安装 `Vision/requirements-build.txt`，执行 `tools/package.ps1`。输出位于 `artifacts/windows/AeroMind.exe`。
+首次构建需要下载 npm 依赖。完成后可离线重复启动。模型权重已签入仓库。重新打包 Windows 版时，在 Python 3.11 虚拟环境安装 `Vision/requirements-build.txt`，执行 `tools/package.ps1`。本版输出位于 `artifacts/windows/AeroMind.exe`。
 
 复训流程使用 CPU 版 PyTorch、OpenCV 和 NumPy 执行 `Vision/train.py`，再在装有 ONNX 与 ONNX Runtime 的环境执行 `Vision/export.py`。本次训练复用了电脑现有的 Python 3.10 和 PyTorch 2.9.1+cpu，导出、独立验证与打包使用 Python 3.11。训练记录保存了随机种子、样本数、曲线、测试混淆矩阵和权重 SHA-256。[模型记录](public/models/training.json)
 
@@ -72,6 +86,7 @@ python tools/launch.py
 浏览器回归从真实本机静态服务启动，阻断外部请求，使用同一套渲染器、模型和控制器。
 
 ```powershell
+node tools/test.mjs guide --headed
 node tools/test.mjs smoke
 node tools/test.mjs perception
 node tools/test.mjs standard
@@ -82,6 +97,8 @@ node tools/test.mjs lecture
 node tools/test.mjs lecture-live
 ```
 
-`lecture` 以加速仿真时钟连续运行十轮，`lecture-live` 以 1× 实际播放速度连续运行十轮。原始测量保存在 `output/playwright/`。可设置 `AEROMIND_APP` 指向待验收的 EXE，以检验分发包。完整产品设计见 [PLAN.md](PLAN.md)，组件许可见 [第三方说明](THIRD_PARTY.md)。
+`lecture` 以加速仿真时钟连续运行十轮，`lecture-live` 以 1× 实际播放速度连续运行十轮。原始测量保存在 `output/playwright/`。添加 `--packaged` 即可测试本机打包的 EXE，也可用 `AEROMIND_APP` 指定其他路径。完整产品设计见 [PLAN.md](PLAN.md)，组件许可见 [第三方说明](THIRD_PARTY.md)。
 
-在 Windows 上运行 `python tools/test-launch.py artifacts/windows/AeroMind.exe` 可检查双击启动所经过的应用窗口、内置模型与关闭后的自动退出。浏览器各项测试及启动测试完成后，执行 `node tools/summarize.mjs artifacts/windows/AeroMind.exe` 可由同一份 EXE 的测量生成发行验收记录。
+在 Windows 上运行 `python tools/test-launch.py artifacts/windows/AeroMind.exe` 可检查双击启动所经过的应用窗口、内置模型与关闭后的自动退出。`node tools/test.mjs guide --headed --record-example` 可从一趟实际配送的回看帧采集双图，写入 `output/playwright/guide-example.png`。
+
+对同一份 EXE 完成入门课（guide）、启动、标准配送（standard）、自由实验操作（interaction）和可见窗口性能（native）测试后，执行 `node tools/summarize.mjs --guide` 可重新生成本版入门课验收数据。

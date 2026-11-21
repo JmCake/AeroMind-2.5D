@@ -4,12 +4,24 @@ import functools
 import http.client
 import os
 from pathlib import Path
+import socket
 import subprocess
 import sys
 import threading
 import time
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 import webbrowser
+
+
+class ClassroomServer(ThreadingHTTPServer):
+    # Windows SO_REUSEADDR allows two listeners to receive the same address.
+    # Reserve this port exclusively, or let the launcher try the next one.
+    allow_reuse_address = os.name != "nt"
+
+    def server_bind(self):
+        if os.name == "nt":
+            self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_EXCLUSIVEADDRUSE, 1)
+        super().server_bind()
 
 
 class Handler(SimpleHTTPRequestHandler):
@@ -26,7 +38,11 @@ class Handler(SimpleHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(body)
         else:
-            super().do_GET()
+            try:
+                super().do_GET()
+            except (BrokenPipeError, ConnectionResetError, ConnectionAbortedError):
+                # Changing lessons or closing the browser can cancel an asset transfer.
+                pass
 
     def list_directory(self, path):
         return self.send_error(404)
@@ -52,25 +68,27 @@ def main():
     parser.add_argument("--session-file", type=Path, help=argparse.SUPPRESS)
     opts = parser.parse_args()
     root = Path(getattr(sys, "_MEIPASS", Path(__file__).resolve().parents[1])) / "dist"
-    if not (root / "game.js").is_file():
+    if not (root / "guide.js").is_file() or not (root / "version.txt").is_file():
         raise SystemExit("Build the game first with npm run build.")
+    version = (root / "version.txt").read_bytes()
     handler = functools.partial(Handler, directory=str(root))
     for port in range(opts.port, opts.port + 16):
         try:
-            server = ThreadingHTTPServer(("127.0.0.1", port), handler)
+            server = ClassroomServer(("127.0.0.1", port), handler)
             break
         except OSError:
             if not opts.no_browser:
+                probe = http.client.HTTPConnection("127.0.0.1", port, timeout=.4)
                 try:
-                    probe = http.client.HTTPConnection("127.0.0.1", port, timeout=.4)
-                    probe.request("GET", "/identity")
-                    same = probe.getresponse().read(32) == b"AeroMind-2.5D"
-                    probe.close()
-                    if same:
+                    probe.request("GET", "/version.txt")
+                    response = probe.getresponse()
+                    if response.status == 200 and response.read(len(version) + 1) == version:
                         show(f"http://127.0.0.1:{port}/")
                         return
-                except OSError:
+                except (OSError, http.client.HTTPException):
                     pass
+                finally:
+                    probe.close()
     else:
         raise SystemExit("No available loopback port.")
     url = f"http://127.0.0.1:{server.server_port}/"

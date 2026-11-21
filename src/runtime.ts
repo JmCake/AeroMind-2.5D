@@ -104,6 +104,9 @@ export class Game {
       });
   }
   start() {
+    const heartbeat = () => fetch('./ping', { cache: 'no-store' }).catch(() => {});
+    void heartbeat();
+    setInterval(heartbeat, 20000);
     requestAnimationFrame(this.loop);
   }
   loop = (now: number) => {

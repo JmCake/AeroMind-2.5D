@@ -6,6 +6,7 @@ import type { Config, Mode, State, Receipt } from './simulation';
 import { Game, quantile, timeText } from './runtime';
 import type { Frame } from './runtime';
 import { interpret } from './command';
+import { drawRaw, drawDetection } from './camera-display';
 
 const el = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T;
 const select = (id: string) => el<HTMLSelectElement>(id),
@@ -153,36 +154,8 @@ function order() {
   update();
 }
 click('dispatch', order);
-function drawRaw(c: HTMLCanvasElement, pixels: Uint8Array) {
-  const context = c.getContext('2d')!;
-  context.putImageData(new ImageData(new Uint8ClampedArray(pixels), WIDTH, HEIGHT), 0, 0);
-}
 function renderFrame(frame: Frame, c = canvas('feed'), mask = segmentation) {
-  const ctx = c.getContext('2d')!;
-  drawRaw(c, frame.input.pixels);
-  if (mask) {
-    const img = ctx.getImageData(0, 0, WIDTH, HEIGHT);
-    for (let i = 0; i < frame.result.mask.length; i++)
-      if (frame.result.mask[i]) {
-        img.data[i * 4] = 255;
-        img.data[i * 4 + 1] = 144;
-        img.data[i * 4 + 2] = 55;
-      }
-    ctx.putImageData(img, 0, 0);
-  }
-  ctx.lineWidth = 1;
-  ctx.font = '9px "Microsoft YaHei UI", sans-serif';
-  for (const box of frame.result.detections) {
-    ctx.strokeStyle = '#fc994d';
-    ctx.fillStyle = '#173430';
-    ctx.strokeRect(box.x - box.w / 2, box.y - box.h / 2, box.w, box.h);
-    const str = STATIONS[box.label].name + ' ' + Math.round(box.score * 100) + '%';
-    const x = clamp(box.x - box.w / 2, 0, WIDTH - 68),
-      y = clamp(box.y - box.h / 2 - 10, 0, HEIGHT - 10);
-    ctx.fillRect(x, y, ctx.measureText(str).width + 3, 11);
-    ctx.fillStyle = '#ffe0ad';
-    ctx.fillText(str, x + 1, y + 8);
-  }
+  drawDetection(c, frame, mask);
 }
 game.onFrame = (frame) => {
   if (!game.forward) renderFrame(frame);
@@ -991,9 +964,8 @@ click('lecture', () => {
     update();
   });
 });
+if (['#first-flight', '#cover', '#fleet'].includes(location.hash))
+  document.querySelector<HTMLAnchorElement>('.course-home')!.href = './' + location.hash;
 if (new URLSearchParams(location.search).has('verify')) Object.assign(window, { aeromind: game });
 update();
 game.start();
-const heartbeat = () => fetch('./ping', { cache: 'no-store' }).catch(() => {});
-void heartbeat();
-setInterval(heartbeat, 20000);

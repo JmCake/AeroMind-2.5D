@@ -5,8 +5,10 @@ import { mkdir, readFile, stat, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 
-const executable = process.argv[2] || 'artifacts/windows/AeroMind.exe';
-const suiteNames = ['smoke', 'standard', 'perception', 'scenarios', 'interaction', 'native', 'lecture', 'lecture-live', 'launcher'];
+const guideOnly = process.argv.includes('--guide');
+const executable = process.argv.slice(2).find((arg) => arg !== '--guide') || 'artifacts/windows/AeroMind.exe';
+const suiteNames = guideOnly ? ['guide', 'launcher', 'standard', 'interaction', 'native']
+  : ['smoke', 'standard', 'perception', 'scenarios', 'interaction', 'native', 'lecture', 'lecture-live', 'launcher'];
 const binary = await readFile(executable);
 const sha256 = createHash('sha256').update(binary).digest('hex');
 const raw = {};
@@ -18,6 +20,7 @@ for (const suite of suiteNames) {
     assert.equal(report.packaged, true);
     assert.deepEqual(report.errors, []);
     assert.deepEqual(report.external, []);
+    if (guideOnly) assert.deepEqual(report.failedAssets, []);
   }
   raw[suite] = report;
 }
@@ -74,6 +77,19 @@ const orders = standard.map((r) => r.receipt);
 assert.ok(orders.filter(finished).length >= 9);
 assert.ok(standard.every((r) => r.accepted > 0 && r.receipt?.collisions === 0 && r.receipt.error <= 1.5));
 assert.ok(raw.native.runs.every((r) => r.controlSamples > 0 && r.medianFps >= 30 && r.p95ControlMs <= 350));
+if (guideOnly) {
+  assert.equal(raw.guide.result.lessons.length, 3);
+  assert.ok(raw.guide.result.lessons.every((l) => l.receipts.length === l.assigned.length && l.receipts.every(finished)));
+  assert.ok(raw.launcher.busyPortFallback && raw.guide.result.labRoundTrip);
+  const report = {
+    ...raw.guide, launcher: raw.launcher, standard: trips(orders), freeLab: raw.interaction.result,
+    freeLabPerformance: raw.native.runs, exeBytes: binary.byteLength,
+  };
+  await mkdir('verification', { recursive: true });
+  await writeFile('verification/guide.json', JSON.stringify(report, null, 2) + '\n');
+  console.log('Wrote verification/guide.json for ' + sha256);
+  process.exit(0);
+}
 const cases = raw.scenarios.cases;
 const machine = os.cpus();
 const sourceRevision = execFileSync('git', ['log', '-1', '--format=%H', '--', 'src', 'public',

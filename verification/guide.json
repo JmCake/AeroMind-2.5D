@@ -1,0 +1,263 @@
+{
+  "mode": "guide",
+  "hardware": {
+    "renderer": "ANGLE (Intel, Intel(R) Arc(TM) Graphics (0x00007D55) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+    "webgl": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+    "viewport": [
+      1280,
+      720
+    ],
+    "drawingBuffer": [
+      682,
+      346
+    ],
+    "error": "",
+    "browser": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Safari/537.36 Edg/157.0.0.0"
+  },
+  "external": [],
+  "errors": [],
+  "failedAssets": [],
+  "packaged": true,
+  "testedApplicationSha256": "fa21e5e4b4b059073d582461e63a96eba069eae2805a866975321d6f5a95efad",
+  "result": {
+    "initial": {
+      "title": "把包裹送到图书馆",
+      "buttons": [
+        "action"
+      ],
+      "selectors": 0,
+      "orders": 0,
+      "paused": true
+    },
+    "mobile": {
+      "width": 390,
+      "content": 375,
+      "actionBottom": 248.75,
+      "visionWidth": 154.5
+    },
+    "lessons": [
+      {
+        "assigned": [
+          1
+        ],
+        "detected": {
+          "frame": 130,
+          "sample": 15.03333333333329,
+          "model": "mature",
+          "rawMatchesCamera": true,
+          "differentChannels": 11105,
+          "libraryScore": 0.9999844042628645,
+          "activeCover": false,
+          "source": "live"
+        },
+        "receipts": [
+          {
+            "station": 1,
+            "drone": 0,
+            "signed": true,
+            "result": "已签收并归港",
+            "time": 31.53333333333406,
+            "path": 158.47303778261576,
+            "energy": 2.674566396318996,
+            "collisions": 0,
+            "error": 0.4142546138761594,
+            "closest": null,
+            "poseRms": 0.0646359421710288,
+            "wait": 0,
+            "samples": 271
+          }
+        ],
+        "review": "review",
+        "reviewFrame": 131,
+        "medianFps": 120.5,
+        "intervalSamples": 3864,
+        "p95FrameMs": 8.6,
+        "sharedMessages": 0
+      },
+      {
+        "assigned": [
+          1
+        ],
+        "coveredFrame": {
+          "frame": 401,
+          "sample": 15.03333333333329,
+          "model": "mature",
+          "rawMatchesCamera": true,
+          "differentChannels": 0,
+          "libraryScore": null,
+          "activeCover": true,
+          "source": "live"
+        },
+        "revealedFrame": {
+          "frame": 403,
+          "sample": 15.166666666666623,
+          "model": "mature",
+          "rawMatchesCamera": true,
+          "differentChannels": 12630,
+          "libraryScore": 0.9999836200327471,
+          "activeCover": false,
+          "source": "live"
+        },
+        "receipts": [
+          {
+            "station": 1,
+            "drone": 0,
+            "signed": true,
+            "result": "已签收并归港",
+            "time": 39.866666666666966,
+            "path": 161.7438293421901,
+            "energy": 2.8892300223802425,
+            "collisions": 0,
+            "error": 0.13582182920338376,
+            "closest": null,
+            "poseRms": 0.19987331854402143,
+            "wait": 0.32,
+            "samples": 343
+          }
+        ],
+        "review": "review",
+        "reviewFrame": 403,
+        "medianFps": 120.5,
+        "intervalSamples": 4000,
+        "p95FrameMs": 8.6,
+        "sharedMessages": 0
+      },
+      {
+        "assigned": [
+          1,
+          2,
+          3
+        ],
+        "receipts": [
+          {
+            "station": 3,
+            "drone": 0,
+            "signed": true,
+            "result": "已签收并归港",
+            "time": 23.366666666666987,
+            "path": 109.02995084117174,
+            "energy": 1.9365425666382239,
+            "collisions": 0,
+            "error": 0.45036935101052317,
+            "closest": 1.84448306910281,
+            "poseRms": 0.261598999775355,
+            "wait": 0,
+            "samples": 67
+          },
+          {
+            "station": 2,
+            "drone": 1,
+            "signed": true,
+            "result": "已签收并归港",
+            "time": 31.20000000000071,
+            "path": 148.6578056569655,
+            "energy": 2.7959764822742277,
+            "collisions": 0,
+            "error": 0.599574781233353,
+            "closest": 1.84448306910281,
+            "poseRms": 0.3250844886036068,
+            "wait": 0,
+            "samples": 89
+          },
+          {
+            "station": 1,
+            "drone": 2,
+            "signed": true,
+            "result": "已签收并归港",
+            "time": 41.20000000000022,
+            "path": 188.45981234191657,
+            "energy": 3.717557147559275,
+            "collisions": 0,
+            "error": 0.3518975407107632,
+            "closest": 3.1662541471899894,
+            "poseRms": 0.6821935503417624,
+            "wait": 0,
+            "samples": 118
+          }
+        ],
+        "review": "review",
+        "reviewFrame": 711,
+        "medianFps": 120.5,
+        "intervalSamples": 4000,
+        "p95FrameMs": 8.6,
+        "sharedMessages": 1676
+      }
+    ],
+    "labRoundTrip": true
+  },
+  "launcher": {
+    "mode": "launcher",
+    "testedApplicationSha256": "fa21e5e4b4b059073d582461e63a96eba069eae2805a866975321d6f5a95efad",
+    "defaultArguments": true,
+    "landing": "入门课",
+    "version": "1.1.0",
+    "selectedPort": 8766,
+    "busyPortFallback": true,
+    "appWindowOpenedSeconds": 1.25,
+    "automaticShutdownAfterCloseSeconds": 189.9,
+    "matureModelSha256": "b949caf2a204c21282a70e4e53b6ffb45cf0243cb852f4a8db5111d544238142"
+  },
+  "standard": {
+    "receipts": 10,
+    "returnedSigned": 10,
+    "outcomes": {
+      "已签收并归港": 10
+    },
+    "collisionEventsOnReceipts": 0,
+    "minRecordedInterDroneMetres": null,
+    "maxSignedDropErrorMetres": 0.6756473601536622,
+    "totalPathMetres": 1583.8785163955044,
+    "totalEnergyPercentagePoints": 26.732157647647327
+  },
+  "freeLab": {
+    "parsed": "有多个目的地，请选定一个\n大学图书馆\n社区医院\n\n优先级 5 · 120 秒 · 占用时等待 · 避开体育馆\n\n确认派单",
+    "selectedStation": 2,
+    "mapEvent": {
+      "id": 3,
+      "kind": "closed",
+      "i": 4,
+      "j": 3,
+      "at": 1.8666666666666691,
+      "duration": 22,
+      "minLayer": 1,
+      "maxLayer": 1
+    },
+    "restored": {
+      "shared": false,
+      "chapter": 4,
+      "events": 1
+    },
+    "observation": {
+      "frame": 135,
+      "time": 15.166666666666623,
+      "model": "mature",
+      "score": 0.9999898238371938,
+      "phase": "search"
+    }
+  },
+  "freeLabPerformance": [
+    {
+      "fleet": 1,
+      "frames": 2876,
+      "medianFps": 120.48192771082753,
+      "p95FrameMs": 8.600000000002183,
+      "p95InferenceMs": 1.2000000029802322,
+      "p95ControlMs": 116,
+      "controlSamples": 144,
+      "draws": 42,
+      "discarded": 0
+    },
+    {
+      "fleet": 3,
+      "frames": 2879,
+      "medianFps": 120.48192771080113,
+      "p95FrameMs": 8.60000000000582,
+      "p95InferenceMs": 1.2999999970197678,
+      "p95ControlMs": 165.5,
+      "controlSamples": 197,
+      "draws": 103,
+      "discarded": 0
+    }
+  ],
+  "exeBytes": 12924773
+}

@@ -1,0 +1,95 @@
+:root {
+  font-family: "Segoe UI", "Microsoft YaHei UI", "Microsoft YaHei", sans-serif;
+  color: #1a352e;
+  background: #f8f7f1;
+  font-synthesis: none;
+  --ink: #1a352e;
+  --muted: #50675b;
+  --line: #d6dcd0;
+  --orange: #ffad64;
+}
+* { box-sizing: border-box; }
+body { margin: 0; }
+[hidden] { display: none !important; }
+button, a { font: inherit; }
+button { cursor: pointer; }
+button:focus-visible, a:focus-visible { outline: 3px solid #167b68; outline-offset: 4px; }
+.wrap { width: min(1320px, 100% - clamp(36px, 7vw, 112px)); margin: 0 auto; }
+.mast { border-bottom: 1px solid var(--line); }
+.mast-inner, .identity, .lesson-count, .ticks, .card-head, .map-footer, .lesson-foot { display: flex; align-items: center; }
+.mast-inner { min-height: 65px; justify-content: space-between; gap: 16px; }
+.identity { gap: 10px; white-space: nowrap; }
+.identity img { border-radius: 8px; }
+.identity strong { font-size: 23px; letter-spacing: -.055em; }
+.identity span { margin-left: 4px; border-left: 1px solid #aab6aa; padding-left: 14px; color: var(--muted); font-size: 14px; }
+.lab-link, .lesson-foot button { font-size: 14px; color: #38584a; text-underline-offset: 4px; }
+.lab-link { text-decoration: none; padding: 8px 0 8px 8px; }
+.lab-link:hover, .lesson-foot button:hover { text-decoration: underline; }
+.assignment { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: clamp(22px, 4vh, 40px) 0; }
+.lesson-count { font-size: 13px; font-weight: 650; color: #526651; gap: 12px; }
+.ticks { gap: 4px; }
+.ticks i { height: 4px; width: 20px; border-radius: 2px; background: #d6dccc; }
+.ticks i.past, .ticks i:first-child { background: #517e65; }
+h1, h2, p, figure { margin: 0; }
+h1 { font-size: clamp(31px, 3.3vw, 49px); line-height: 1.25; margin: 7px 0 8px; letter-spacing: -.045em; }
+#instruction { color: var(--muted); font-size: clamp(15px, 1.3vw, 18px); line-height: 1.55; }
+#action { background: var(--orange); color: #282c1b; border: 1px solid #b7773c; border-radius: 9px; padding: 13px 19px; min-height: 51px; min-width: 152px; font-size: 17px; font-weight: 700; display: flex; align-items: center; justify-content: space-between; gap: 21px; white-space: nowrap; box-shadow: 0 2px 0 #ad703b; }
+#action:hover { background: #ffbb7e; }
+#action.watching { background: #edf0e6; color: #304f40; border-color: #aab9a7; box-shadow: none; }
+#action:active { transform: translateY(1px); box-shadow: none; }
+#action:disabled { opacity: .66; cursor: wait; }
+.arrow { font-size: 21px; line-height: 1; }
+.workbench { display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr); gap: clamp(14px, 1.6vw, 24px); align-items: start; }
+.card { background: #fffef9; border: 1px solid #cbd5c8; border-radius: 14px; overflow: hidden; }
+.card-head, .map-footer, .lesson-foot { justify-content: space-between; gap: 10px; }
+.card-head { padding: 13px 18px; min-height: 53px; }
+h2 { font-size: 20px; letter-spacing: -.03em; }
+.card-head > span, .readout-label, .lesson-foot { font-size: 13px; color: var(--muted); }
+.status::before { content: ""; display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #4f8a6c; margin: 0 7px 1px 0; }
+#city { position: relative; isolation: isolate; height: clamp(270px, 48vh, 490px); background: #a6c9bd; overflow: hidden; }
+#city > canvas { width: 100%; height: 100%; display: block; }
+#pins, #aircraft { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+.aircraft { position: absolute; width: 14px; height: 14px; margin: -7px; border-radius: 50%; border: 2px solid var(--flight); box-shadow: 0 0 0 1px #214139; }
+.aircraft b { position: absolute; bottom: 9px; left: 9px; background: #213a32; color: #fff9e9; border-bottom: 2px solid var(--flight); border-radius: 3px; padding: 1px 4px; font: 600 11px/1.25 "Segoe UI", sans-serif; }
+.pin { position: absolute; transform: translate(-50%,-100%); padding: 3px 7px; border-radius: 5px; font-size: 12px; font-weight: 650; color: #fffbed; background: #284b41; white-space: nowrap; box-shadow: 0 1px 3px #1b332c44; }
+.pin::after { content: ""; position: absolute; width: 2px; height: 8px; background: currentColor; left: 50%; top: 100%; }
+.pin.destination { background: #ffe1ac; color: #4c3720; }
+.map-footer { padding: 11px 18px; min-height: 42px; color: #395448; font-size: 14px; }
+.map-footer b { color: #728a76; margin: 0 4px; }
+#mission-time, #frame-caption { font-variant-numeric: tabular-nums; }
+.vision-card { background: #214139; color: #f6f4e5; border-color: #294a40; }
+.vision-card .card-head { padding-bottom: 15px; }
+.vision-card .card-head > span { color: #c6d8c7; }
+.image-pair { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 10px; padding: 0 15px 18px; }
+figure { min-width: 0; }
+figcaption { font-size: 14px; color: #eef1e0; padding: 0 0 8px 2px; display: flex; align-items: center; gap: 6px; }
+.frame-key { width: 13px; height: 10px; border: 2px solid #ff9b4d; }
+.image-pair canvas { display: block; width: 100%; height: auto; aspect-ratio: 4 / 3; border-radius: 5px; background: #344c45; }
+.readout { padding: 16px 18px 18px; border-top: 1px solid #496357; }
+.readout-label { color: #c9d7c4; font-weight: 600; }
+.readout p { font-size: clamp(16px, 1.5vw, 20px); line-height: 1.55; margin: 5px 0 10px; }
+#frame-caption { font-size: 13px; line-height: 1.5; color: #c2d1bf; }
+.lesson-foot { min-height: 48px; }
+.lesson-foot button { background: none; border: none; padding: 7px 0; }
+#fault { color: #873a20; margin-bottom: 12px; }
+@media (min-width: 1550px) { #city { height: 460px; } }
+@media (max-width: 760px) {
+  .wrap { width: calc(100% - 32px); }
+  .mast-inner { min-height: 54px; }
+  .identity strong { font-size: 21px; }
+  .identity span { font-size: 12px; padding-left: 9px; margin-left: 1px; }
+  .workbench { grid-template-columns: 1fr; gap: 13px; }
+  .assignment { align-items: flex-start; }
+  #city { height: clamp(205px, 45vw, 330px); }
+  .image-pair { max-width: 560px; }
+}
+@media (max-width: 540px) {
+  .assignment { display: block; padding: 19px 0 16px; }
+  #action { margin-top: 13px; width: 100%; min-height: 44px; padding: 9px 15px; }
+  .card-head { min-height: 43px; padding: 9px 13px; }
+  .map-footer { min-height: 34px; padding: 7px 13px; }
+  .image-pair { padding: 0 11px 12px; }
+  .identity { gap: 6px; }
+  .identity img { width: 26px; height: 26px; }
+  .lab-link { font-size: 13px; }
+}

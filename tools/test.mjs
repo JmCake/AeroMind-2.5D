@@ -9,10 +9,12 @@ import { collect } from './collect.mjs';
 import { scenarios } from './scenarios.mjs';
 import { evaluateVision, profileNetwork } from './vision-eval.mjs';
 import { classroomUI } from './classroom-ui.mjs';
+import { guideUI } from './guide-ui.mjs';
 import { chromium } from 'playwright-core';
 const args = process.argv.slice(2),
   mode = args[0] || 'smoke',
   out = 'output/playwright';
+const packagedApp = process.env.AEROMIND_APP || (args.includes('--packaged') ? path.resolve('artifacts/windows/AeroMind.exe') : null);
 await mkdir(out, { recursive: true });
 const binary =
   process.env.AEROMIND_BROWSER ||
@@ -24,7 +26,7 @@ const binary =
   ].find(existsSync);
 if (!binary) throw Error('A local Edge/Chrome executable is required; set AEROMIND_BROWSER.');
 let port = 0;
-if (process.env.AEROMIND_APP) {
+if (packagedApp) {
   const reserve = createServer();
   await new Promise((resolve) => reserve.listen(0, '127.0.0.1', resolve));
   port = reserve.address().port;
@@ -33,9 +35,9 @@ if (process.env.AEROMIND_APP) {
 const sessionFile = path.resolve(out, '.session-' + randomUUID());
 await writeFile(sessionFile, 'test');
 const server = spawn(
-  process.env.AEROMIND_APP || process.env.AEROMIND_PYTHON || 'python',
+  packagedApp || process.env.AEROMIND_PYTHON || 'python',
   [
-    ...(process.env.AEROMIND_APP ? [] : ['-u', 'tools/launch.py']),
+    ...(packagedApp ? [] : ['-u', 'tools/launch.py']),
     '--port',
     String(port),
     '--no-browser',
@@ -79,6 +81,7 @@ try {
   const context = await browser.newContext({ viewport: { width: 1280, height: 720 }, deviceScaleFactor: 1 });
   const errors = [],
     external = [],
+    failedAssets = [],
     page = await context.newPage();
   await context.route('**/*', (r) => {
     const u = new URL(r.request().url());
@@ -92,10 +95,13 @@ try {
     errors.push(e.message);
     console.error('Browser error', e.message);
   });
+  page.on('response', (r) => {
+    if (r.status() >= 400) failedAssets.push({ path: new URL(r.url()).pathname, status: r.status() });
+  });
   page.on('console', (m) => {
     if (m.type() === 'error') console.error(m.text());
   });
-  await page.goto(url + '?verify=1');
+  await page.goto(url + (mode === 'guide' ? '' : 'lab.html') + '?verify=1');
   await page.waitForFunction(() => window.aeromind?.ready || window.aeromind?.error, null, {
     timeout: 55000,
   });
@@ -114,11 +120,11 @@ try {
   });
   assert.equal(hardware.error, '');
   console.log(JSON.stringify(hardware));
-  await page.waitForFunction(() => window.aeromind.frames.size > 0, null, { timeout: 20000 });
+  if (mode !== 'guide')
+    await page.waitForFunction(() => window.aeromind.frames.size > 0, null, { timeout: 20000 });
   if (mode === 'smoke' || mode === 'native') await page.screenshot({ path: out + '/' + mode + '-city.png' });
-  const testedApplicationSha256=process.env.AEROMIND_APP?
-    createHash('sha256').update(await readFile(process.env.AEROMIND_APP)).digest('hex'):null;
-  const report = { mode, hardware, external, errors, packaged: !!process.env.AEROMIND_APP,testedApplicationSha256 };
+  const testedApplicationSha256 = packagedApp ? createHash('sha256').update(await readFile(packagedApp)).digest('hex') : null;
+  const report = { mode, hardware, external, errors, failedAssets, packaged: !!packagedApp, testedApplicationSha256 };
   if (mode === 'smoke' || mode === 'standard') {
     const results = [];
     for (let i = 0; i < (mode === 'smoke' ? 1 : 10); i++) {
@@ -306,12 +312,15 @@ try {
       await writeFile(out + '/lecture.json', JSON.stringify(report, null, 2));
       assert.ok(r.finished && !r.error);
     }
+  } else if (mode === 'guide') {
+    report.result = await guideUI(page, out, args.includes('--record-example'));
   } else if (mode === 'interaction') {
     report.result = await classroomUI(page, out);
   } else throw Error('Unknown verification mode.');
   await writeFile(out + '/' + mode + '.json', JSON.stringify(report, null, 2));
   assert.deepEqual(errors, []);
   assert.deepEqual(external, []);
+  assert.deepEqual(failedAssets, []);
   console.log('PASS', mode);
 } finally {
   await browser.close();

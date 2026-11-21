@@ -5,7 +5,7 @@ const out = path.resolve('dist');
 await mkdir(path.join(out, 'runtime'), { recursive: true });
 await cp('public', out, { recursive: true });
 await build({
-  entryPoints: { game: 'src/main.ts', vision: 'src/worker.ts' },
+  entryPoints: { guide: 'src/guide.ts', game: 'src/main.ts', vision: 'src/worker.ts' },
   outdir: out,
   format: 'esm',
   bundle: true,
@@ -20,6 +20,8 @@ for (const ext of ['mjs', 'wasm'])
     path.join(out, 'runtime', 'ort-wasm-simd-threaded.' + ext)
   );
 const notices = await readFile('THIRD_PARTY.md', 'utf8');
+const { version } = JSON.parse(await readFile('package.json', 'utf8'));
+await writeFile(path.join(out, 'version.txt'), 'AeroMind-2.5D/' + version);
 await writeFile(
   path.join(out, 'THIRD_PARTY.txt'),
   notices + '\n\n' + (await readFile('node_modules/three/LICENSE', 'utf8'))

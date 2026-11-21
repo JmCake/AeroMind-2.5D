@@ -8,6 +8,7 @@ from pathlib import Path
 import socket
 import subprocess
 import sys
+import tempfile
 import time
 
 
@@ -44,40 +45,80 @@ def asset(port, resource, timeout=3):
         connection.close()
 
 
-def find_app(ports):
+def find_app(ports, expected_version=None):
+    resource = "/version.txt" if expected_version else "/identity"
+    expected = expected_version or b"AeroMind-2.5D"
     for port in ports:
         try:
-            if asset(port, "/identity", timeout=0.2) == b"AeroMind-2.5D":
+            if asset(port, resource, timeout=1.5 if expected_version else 0.2) == expected:
                 return port
         except (OSError, ValueError, http.client.HTTPException):
             pass
     return None
 
 
+def check_busy_port(exe, signature):
+    # Emulate a second Windows app that allows SO_REUSEADDR on its listening port.
+    with socket.socket() as occupied, tempfile.TemporaryDirectory() as folder:
+        occupied.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        occupied.bind(("127.0.0.1", 0))
+        occupied.listen()
+        first = occupied.getsockname()[1]
+        assert first < 65535
+        sentinel = Path(folder, "running")
+        sentinel.touch()
+        child = subprocess.Popen([str(exe), "--port", str(first), "--no-browser", "--session-file", str(sentinel)])
+        try:
+            deadline = time.monotonic() + 35
+            alternatives = range(first + 1, min(first + 16, 65536))
+            while time.monotonic() < deadline:
+                for port in alternatives:
+                    try:
+                        if asset(port, "/version.txt", timeout=.18) == signature:
+                            return True
+                    except (OSError, ValueError, http.client.HTTPException):
+                        pass
+                if child.poll() is not None:
+                    break
+            raise AssertionError("A second app already owned the requested port and no fallback served the guide.")
+        finally:
+            sentinel.unlink(missing_ok=True)
+            child.wait(timeout=15)
+
+
 def main():
     exe = Path(sys.argv[1]).resolve()
     args = [str(exe)]
     ports = range(8765, 8781)
+    version = json.loads(Path("package.json").read_text("utf-8"))["version"]
+    signature = f"AeroMind-2.5D/{version}".encode()
+    busy_port_fallback = check_busy_port(exe, signature)
     original = app_windows()
     if original or find_app(ports) is not None:
         # Keep an already-open classroom session outside this test.
         with socket.socket() as probe:
             probe.bind(("127.0.0.1", 0))
-            ports = [probe.getsockname()[1]]
+            first = probe.getsockname()[1]
+            ports = range(first, min(65536, first + 16))
         args += ["--port", str(ports[0])]
     start = time.monotonic()
     process = subprocess.Popen(args)
     window = None
+    port = None
     try:
         while time.monotonic() - start < 45:
             opened = app_windows() - original
             if len(opened) == 1:
-                window = opened.pop()
-                break
+                port = find_app(ports, signature)
+                if port is not None:
+                    window = opened.pop()
+                    break
+            if process.poll() is not None:
+                raise RuntimeError(f"Launcher exited with {process.returncode} before its window and service were ready.")
             time.sleep(0.2)
-        assert window, "An AeroMind browser app window did not appear."
-        port = find_app(ports)
-        assert port is not None, "The newly opened app has no loopback identity."
+        assert window and port, f"No new classroom window with a matching v{version} service on {ports}."
+        landing = asset(port, "/").decode("utf-8")
+        assert 'src="./guide.js"' in landing and "开始配送" in landing
         bundled_hash = hashlib.sha256(asset(port, "/models/mature.onnx")).hexdigest()
         trained = json.loads(Path("public/models/training.json").read_text("utf-8"))
         assert bundled_hash == trained["checkpoints"]["mature"]["sha256"]
@@ -91,6 +132,10 @@ def main():
             "mode": "launcher",
             "testedApplicationSha256": hashlib.sha256(exe.read_bytes()).hexdigest(),
             "defaultArguments": len(args) == 1,
+            "landing": "入门课",
+            "version": version,
+            "selectedPort": port,
+            "busyPortFallback": busy_port_fallback,
             "appWindowOpenedSeconds": round(opened_seconds, 2),
             "automaticShutdownAfterCloseSeconds": round(time.monotonic() - closed_at, 2),
             "matureModelSha256": bundled_hash,
